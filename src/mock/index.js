@@ -3,7 +3,7 @@ import loginAPI from './login';
 import articleAPI from './article';
 import article_tableAPI from './article_table';
 import remoteSearchAPI from './remoteSearch';
-import receiveMailAPI from './receive-mail';
+import receiveMailAPI from './receive_mail';
 
 // 登录相关
 Mock.mock(/\/login\/loginbyemail/, 'post', loginAPI.loginByEmail);
