@@ -11,10 +11,8 @@ for (let i = 0; i < count; i++) {
         'isHaveFile|1': true,
         'isHaveAudio|1': true,
         'status|1': [0, 1, 2, 3],
-        sender: {
-            name: '@cname',
-            mail: 'TeamNⅡ@snh48.com'
-        },
+        sendName: '@cname',
+        sendMail: 'TeamNⅡ@snh48.com',
         labelList: [
             {
                 guid: '1',
