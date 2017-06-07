@@ -1,13 +1,9 @@
 import fetch from 'utils/fetch';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/catch';
 
 export function fetchList(query) {
     return fetch({
-        url: '/receive_mail/list',
+        url: '/inbox/list',
         method: 'get',
         params: query
     });
@@ -15,7 +11,7 @@ export function fetchList(query) {
 
 export function fetchDetail(id) {
     return fetch({
-        url: '/receive_mail/detail',
+        url: '/inbox/detail',
         method: 'get',
         params: id
     });

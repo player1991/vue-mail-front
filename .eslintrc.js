@@ -239,7 +239,7 @@ module.exports = {
         'no-console': 'off',
 
         // enforce consistent spacing before function definition opening parenthesis
-        'space-before-function-paren': ['error', 'never'],
+        // 'space-before-function-paren': ['error', 'never'],
 
         // enforce consistent spacing inside parentheses
         'space-in-parens': 'error',
@@ -292,7 +292,7 @@ module.exports = {
         'object-shorthand': 'error',
 
         // require arrow functions as callbacks
-        'prefer-arrow-callback': 'error',
+        // 'prefer-arrow-callback': 'error',
 
         // require const declarations for variables that are never reassigned after declared
         'prefer-const': 'error',

@@ -29,7 +29,8 @@ module.exports = merge(baseWebpackConfig, {
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',
-            'jQuery': 'jquery'
+            'jQuery': 'jquery',
+            // 'Recorder':'Recorder'
         }),
         // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
         new webpack.HotModuleReplacementPlugin(),
