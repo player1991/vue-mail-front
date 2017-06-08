@@ -11,6 +11,11 @@ const getters = {
   roles: state => state.user.roles,
   setting: state => state.user.setting,
   permission_routers: state => state.permission.routers,
-  addRouters: state => state.permission.addRouters
+  addRouters: state => state.permission.addRouters,
+  // mail
+  mailId: state => state.mail.mailId,
+  draftId: state => state.mail.draftId,
+  pageType: state => state.mail.pageType,
+  mailType: state => state.mail.mailType
 };
 export default getters

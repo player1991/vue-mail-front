@@ -9,14 +9,6 @@ export function fetchList(query) {
     });
 }
 
-export function fetchDetail(id) {
-    return fetch({
-        url: '/inbox/detail',
-        method: 'get',
-        params: id
-    });
-}
-
 export function delReceiveMail(idArr) {
     const idStr = String(idArr);
     console.log('要删除的收件id:' + idStr);

@@ -5,6 +5,7 @@ import article_tableAPI from './article_table';
 import remoteSearchAPI from './remoteSearch';
 import inboxAPI from './inbox';
 import contactsAPI from './contacts';
+import mailDetailAPI from './mail_detail';
 
 // 登录相关
 Mock.mock(/\/login\/loginbyemail/, 'post', loginAPI.loginByEmail);
@@ -17,8 +18,8 @@ Mock.mock(/\/article\/detail/, 'get', articleAPI.getArticle);
 
 // 邮件相关
 Mock.mock(/\/inbox\/list/, 'get', inboxAPI.getList);
-Mock.mock(/\/inbox\/detail/, 'get', inboxAPI.getReceiveMail);
 Mock.mock(/\/contacts\/list/, 'get', contactsAPI.getList);
+Mock.mock(/\/mail_detail/, 'get', mailDetailAPI.getDetail);
 
 // // table example相关
 Mock.mock(/\/article_table\/list/, 'get', article_tableAPI.getList);

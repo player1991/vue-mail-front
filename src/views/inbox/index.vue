@@ -3,13 +3,13 @@
   
     <div class="filter-container">
   
-      <el-button v-waves type="primary" class="tool-item filter-item btn-reply">
+      <el-button v-waves @click="reply()" type="primary" class="tool-item filter-item btn-reply">
         <i class="fa fa-reply"></i>
       </el-button>
-      <el-button v-waves type="primary" class="tool-item filter-item btn-reply-all">
+      <el-button v-waves @click="reply(true)" type="primary" class="tool-item filter-item btn-reply-all">
         <i class="fa fa-reply-all"></i>
       </el-button>
-      <el-button v-waves type="primary" icon="share" class="tool-item filter-item btn-forward"></el-button>
+      <el-button v-waves @click="forward" type="primary" icon="share" class="tool-item filter-item btn-forward"></el-button>
       <el-button v-waves type="danger" icon="delete" class="tool-item filter-item btn-del" v-on:click="handleDelete()"></el-button>
   
       <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
@@ -183,7 +183,35 @@ export default {
       this.listQuery.end = parseInt((+time[1] + 3600 * 1000 * 24) / 1000);
     },
     goToDetail(id) {
-      alert(id);
+      this.$store.commit('SET_MAIL_ID', id);
+      this.$store.commit('SET_MAIL_TYPE', 'receive');
+      this.$router.push({ path: '/mail_detail/index' });
+    },
+    reply(isALL) {
+      const selectedLen = this.multipleSelection.length || 0;
+      if (selectedLen !== 1) {
+        this.$message('请选择一封邮件进行回复');
+        return;
+      }
+      this.$store.commit('SET_MAIL_ID', this.multipleSelection[0].id);
+      if (isALL) {
+        this.$store.commit('SET_PAGE_TYPE', 'replyAll');
+      } else {
+        this.$store.commit('SET_PAGE_TYPE', 'reply');
+      }
+      this.$store.commit('SET_MAIL_TYPE', 'rececive');
+      this.$router.push({ path: '/mail_send/index' });
+    },
+    forward() {
+      const selectedLen = this.multipleSelection.length || 0;
+      if (selectedLen !== 1) {
+        this.$message('请选择一封邮件进行转发');
+        return;
+      }
+      this.$store.commit('SET_MAIL_ID', this.multipleSelection[0].id);
+      this.$store.commit('SET_PAGE_TYPE', 'forward');
+      this.$store.commit('SET_MAIL_TYPE', 'rececive');
+      this.$router.push({ path: '/mail_send/index' });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -191,10 +219,7 @@ export default {
     handleDelete() {
       const selectedLen = this.multipleSelection.length || 0;
       if (selectedLen < 1) {
-        this.$message({
-          showClose: true,
-          message: '请选择邮件进行删除'
-        });
+        this.$message('请选择邮件进行删除');
         return;
       }
       this.$confirm('是否删除这' + selectedLen + '封邮件?', '提示', {
@@ -207,7 +232,6 @@ export default {
         inboxAPI.delReceiveMail(idArr).subscribe({
           next: () => {
             this.$message({
-              title: '成功',
               message: '删除成功',
               type: 'success',
               duration: 2000
@@ -221,10 +245,7 @@ export default {
           })
         });
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '操作已取消'
-        });
+        this.$message('操作已取消');
       });
     },
     handleDownload() {

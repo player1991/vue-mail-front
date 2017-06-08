@@ -37,7 +37,7 @@
         </el-row>
         <el-row :gutter="20">
             <el-col :span='12'>
-                <el-upload class="upload-file" :before-upload="handleBefore" :on-preview="handlePreview" :on-success="handleSuccess" :on-remove="handleRemove" :show-file-list="true" :file-list="mail.fileList" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
+                <el-upload class="upload-file" :before-upload="handleBefore" :on-preview="handlePreview" :on-success="handleSuccess" :on-remove="handleRemove" :show-file-list="true" :file-list="mail.oldFileList" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
                     <i class="el-icon-upload"></i>
                     <i class="el-upload__text">将文件拖到此处，或
                         <em>点击上传</em>
@@ -48,7 +48,13 @@
             <el-col :span="12">
                 <el-button type="primary" :disabled="isRecording" @click="startRecorder" size="small">开始录音</el-button>
                 <el-button type="primary" :disabled="!isRecording" @click="stopRecorder" size="small">结束录音</el-button>
-                <ul v-show="!!mail.oldAudioList.length" class="old-audio-list"></ul>
+                <ul v-show="!!mail.oldAudioList.length" class="old-audio-list">
+                    <li v-for="(audio, index) in mail.oldAudioList">
+                        <audio :src="audio.url" controls></audio>
+                        <a class="old-audio-name" :href="audio.url" download>{{audio.name}}</a>
+                        <i class="fa fa-trash-o del-audio" @click="delOldAudio(index)"></i>
+                    </li>
+                </ul>
                 <ul class="audio-list">
                     <li v-for="(audio, index) in mail.audioList">
                         <audio :src="audio.url" controls></audio>
@@ -74,11 +80,13 @@
 </template>
 
 <script>
+import Tinymce from 'components/Tinymce';
 import * as contactsAPI from 'api/contacts';
 import * as mailSendAPI from 'api/mail_send';
+import * as mailDetailAPI from 'api/mail_detail';
 import { isEmail, isEmpty, getType } from 'utils/validate';
-import Tinymce from 'components/Tinymce';
-import { parseTime, getNowFormatDate } from 'utils';
+import { getNowFormatDate } from 'utils';
+import { Observable } from 'rxjs/Observable';
 
 export default {
     name: 'mail_send',
@@ -106,19 +114,66 @@ export default {
         }
     },
     created() {
-        this.getContacts();
-        this.editorHeight = window.innerHeight - 420;
+        this.initSendPage();
     },
     methods: {
+        initSendPage() {
+            this.getContacts().subscribe({
+                next: () => { this.getContent() }
+            });
+            this.editorHeight = window.innerHeight - 420;
+        },
         getContacts() {
             this.loading = true;
-            contactsAPI.fetchContacts().then(response => {
-                response.data.forEach(item => {
-                    item.show = item.name + '<' + item.mail + '>';
-                });
-                this.contacts = response.data;
-                this.loading = false;
+            return Observable.create(observer => {
+                contactsAPI.fetchContacts().then(response => {
+                    response.data.forEach(item => {
+                        item.show = item.name + '<' + item.mail + '>';
+                    });
+                    this.contacts = response.data;
+                    this.loading = false;
+                    observer.next();
+                })
             })
+        },
+        getContent() {
+            const pageType = this.$store.getters.pageType;
+            const mailId = this.$store.getters.mailId;
+            const mailType = this.$store.getters.mailType;
+            if (pageType && pageType !== 'add') {
+                mailDetailAPI.fetchDetail({ mailId, mailType }).then(res => {
+                    // 设定字段时要慎重，两边字段不匹配好累啊
+                    const detail = res.data;
+                    this.mail.title = detail.title;
+                    this.mail.content = detail.content;
+                    this.mail.oldFileList = detail.oldFileList;
+                    this.mail.oldAudioList = detail.oldAudioList;
+                    detail.target.forEach(item => {
+                        item.show = item.name + '<' + item.mail + '>';
+                    });
+                    detail.copy.forEach(item => {
+                        item.show = item.name + '<' + item.mail + '>';
+                    });
+                    const sender = {
+                        name: detail.sender,
+                        mail: detail.sendMail,
+                        show: detail.sender + '<' + detail.sendMail + '>'
+                    };
+                    switch (pageType) {
+                        case 'reply':
+                            this.target.push(sender);
+                            break;
+                        case 'replyAll':
+                            this.target = [sender].concat(detail.target, detail.copy);
+                            break;
+                        case 'edit':
+                            this.target = detail.target;
+                            this.copy = detail.copy;
+                            break;
+                        default:
+                    }
+                });
+            }
         },
         addContact(newTag) {
             if (!isEmail(newTag)) {
@@ -155,7 +210,7 @@ export default {
             })
         },
         handlePreview(file) {
-            // 预览
+            // 预览,一些文件因为格式问题无法预览。推荐使用a标签，src为文件的下载地址，点击即可下载,参照录音
             window.open(file.url);
         },
         handleRemove(file) {
@@ -181,6 +236,9 @@ export default {
                 blob: this.recorder.getBlob(),
                 url: window.URL.createObjectURL(this.recorder.getBlob())
             })
+        },
+        delOldAudio(index) {
+            this.mail.oldAudioList.splice(index, 1);
         },
         delAudio(index) {
             this.mail.audioList.splice(index, 1);
@@ -233,13 +291,18 @@ export default {
                 type: 'warning'
             }).then().catch();
         },
-        // 添加到formData
+        // 添加到formData，需要符合formData的格式
         appendToFormData(form, data) {
+            // 遍历要添加的字段
             for (const field in data) {
+                // 如果该字段的值是对象且不为空
                 if (typeof data[field] === 'object' && !isEmpty(data[field])) {
+                    // 数组对象
                     if (getType(data[field]) === 'Array') {
                         data[field].forEach((item, index) => {
+                            // 数组项如果还是对象
                             if (getType(item) === 'Object') {
+                                // 遍历数组项的属性
                                 for (const itemField in item) {
                                     form.append(field + '[' + index + '].' + itemField, item[itemField]);
                                 }
@@ -254,6 +317,7 @@ export default {
                         }
                     }
                 } else {
+                    // 最简单的情况，字段值非对象，直接append
                     form.append(field, data[field]);
                 }
             }
@@ -266,9 +330,9 @@ export default {
                     this.mail[field] = [];
                 }
             }
-            debugger
             this.target = [];
             this.copy = [];
+            // 编辑器内容与mail.content是双向绑定，上一步中mail.content = ''不知道为什么并没有将编辑器内容清空
             tinymce.get(this.editorId).setContent('');
         }
     }
@@ -283,6 +347,10 @@ export default {
 
 ul {
     list-style: none;
+}
+
+audio {
+    width: 260px;
 }
 
 .el-row {
@@ -328,12 +396,18 @@ ul {
     font-size: 20px;
     color: #00ADB5;
 }
-.send-btn{
+
+.send-btn {
     margin-top: 10px;
     margin-right: 60px;
 }
-.cancel-btn{
+
+.cancel-btn {
     margin-top: 10px;
+}
+
+.old-audio-name {
+    vertical-align: 10px;
 }
 </style>
 
