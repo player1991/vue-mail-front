@@ -188,7 +188,7 @@ function mockDraft(mailId) {
     return Mock.mock({
         id: mailId,
         title: `编号为 ${mailId} 的草稿`,
-        content: '<p>我是草稿测试数据我是草稿测试数据</p><p><img class="wscnph" src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943" data-wscntype="image" data-wscnh="300" data-wscnw="400" data-mce-src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943"></p>"',
+        content: '<p>我是草稿测试数据我是草稿测试数据</p><p><img class="wscnph" src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943" data-wscntype="image" data-wscnh="300" data-wscnw="400" data-mce-src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943"></p>',
         target: [
             {
                 name: '曾艳芬',

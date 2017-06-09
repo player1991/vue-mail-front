@@ -95,8 +95,12 @@ const Inbox = () =>
     import ('../views/inbox/index');
 const MailSend = () =>
     import ('../views/mail_send/index');
-const MailDetail = () => 
+const MailDetail = () =>
     import('../views/mail_detail/index');
+const MailLabel = () =>
+    import('../views/mail_label/index');
+const MailList = () =>
+    import('../views/mail_list/index');
 
 /* permission */
 const Permission = () =>
@@ -152,12 +156,27 @@ export const constantRouterMap = [
         children: [{ path: 'index', component: MailDetail, name: '邮件详情' }]
     },
     {
+        path: '/mail_list',
+        component: Layout,
+        redirect: '/mail_list/index',
+        hidden: true,
+        children: [{ path: 'index', component: MailList, name: '邮件列表' }]
+    },
+    {
         path: '/inbox',
         component: Layout,
         redirect: '/inbox/index',
         icon: 'xinrenzhinan',
         noDropdown: true,
         children: [{ path: 'index', component: Inbox, name: '收件箱' }]
+    },
+    {
+        path: '/mail_label',
+        component: Layout,
+        redirect: '/mail_label/index',
+        icon: 'xinrenzhinan',
+        noDropdown: true,
+        children: [{ path: 'index', component: MailLabel, name: '邮件标签' }]
     }
 ]
 

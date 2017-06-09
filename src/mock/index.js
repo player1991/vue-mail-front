@@ -6,6 +6,7 @@ import remoteSearchAPI from './remoteSearch';
 import inboxAPI from './inbox';
 import contactsAPI from './contacts';
 import mailDetailAPI from './mail_detail';
+import mailLabelAPI from './mail_label';
 
 // 登录相关
 Mock.mock(/\/login\/loginbyemail/, 'post', loginAPI.loginByEmail);
@@ -20,6 +21,7 @@ Mock.mock(/\/article\/detail/, 'get', articleAPI.getArticle);
 Mock.mock(/\/inbox\/list/, 'get', inboxAPI.getList);
 Mock.mock(/\/contacts\/list/, 'get', contactsAPI.getList);
 Mock.mock(/\/mail_detail/, 'get', mailDetailAPI.getDetail);
+Mock.mock(/\/mail_label\/list/, 'get', mailLabelAPI.getList);
 
 // // table example相关
 Mock.mock(/\/article_table\/list/, 'get', article_tableAPI.getList);
