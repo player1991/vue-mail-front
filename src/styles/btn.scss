@@ -101,3 +101,59 @@ $panGreen: #30B08F;
     font-size: 14px;
     border-radius: 4px;
 }
+
+// mail style
+.btn-reply {
+    background-color: #36c6d3;
+    border-color: #36c6d3;
+}
+
+.btn-reply:hover,
+.btn-reply:focus {
+    background-color: #36c6d3;
+    border-color: #36c6d3;
+}
+
+.btn-reply-all {
+    background-color: #118DF0;
+    border-color: #118DF0;
+}
+
+.btn-reply-all:hover,
+.btn-reply-all:focus {
+    background-color: #118DF0;
+    border-color: #118DF0;
+}
+
+.btn-forward {
+    background-color: #F1C40F;
+    border-color: #F1C40F;
+}
+
+.btn-forward:hover,
+.btn-forward:focus {
+    background-color: #F1C40F;
+    border-color: #F1C40F;
+}
+
+.btn-del {
+    background-color: #ed6b75;
+    border-color: #ed6b75;
+}
+
+.btn-del:hover,
+.btn-del:focus {
+    background-color: #ed6b75;
+    border-color: #ed6b75;
+}
+
+.btn-reload {
+    background-color: #29D2E4;
+    border-color: #29D2E4;
+}
+
+.btn-reload:hover,
+.btn-reload:focus {
+    background-color: #29D2E4;
+    border-color: #29D2E4;
+}

@@ -1,7 +1,7 @@
 import Mock from 'mockjs';
 
 const list = [];
-const count = 10;
+const count = 6;
 
 for (let i = 0; i < count; i++) {
     list.push(Mock.mock({
@@ -15,7 +15,7 @@ export default {
     getList: () => {
         return {
             total: list.length,
-            pageList: list
+            labelList: list
         }
     }
 };

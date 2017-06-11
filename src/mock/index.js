@@ -4,9 +4,11 @@ import articleAPI from './article';
 import article_tableAPI from './article_table';
 import remoteSearchAPI from './remoteSearch';
 import inboxAPI from './inbox';
-import contactsAPI from './contacts';
 import mailDetailAPI from './mail_detail';
 import mailLabelAPI from './mail_label';
+import mailListAPI from './mail_list';
+import groupAPI from './mail_group';
+import contactsAPI from './mail_contacts';
 
 // 登录相关
 Mock.mock(/\/login\/loginbyemail/, 'post', loginAPI.loginByEmail);
@@ -22,6 +24,9 @@ Mock.mock(/\/inbox\/list/, 'get', inboxAPI.getList);
 Mock.mock(/\/contacts\/list/, 'get', contactsAPI.getList);
 Mock.mock(/\/mail_detail/, 'get', mailDetailAPI.getDetail);
 Mock.mock(/\/mail_label\/list/, 'get', mailLabelAPI.getList);
+Mock.mock(/\/mail_list/, 'get', mailListAPI.getList);
+Mock.mock(/\/mail_group\/list/, 'get', groupAPI.getList);
+Mock.mock(/\/mail_contacts\/list/, 'get', contactsAPI.getList);
 
 // // table example相关
 Mock.mock(/\/article_table\/list/, 'get', article_tableAPI.getList);

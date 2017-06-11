@@ -9,19 +9,19 @@
             <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
             </el-input>
     
-            <!--<el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.status" placeholder="状态">
-                    <el-option v-for="status in statusOptions" :key="status.value" :label="status.showValue" :value="status.value">
-                    </el-option>
-                  </el-select>-->
+            <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.type" placeholder="类型">
+                <el-option v-for="type in typeOptions" :key="type.value" :label="type.showValue" :value="type.value">
+                </el-option>
+            </el-select>
     
-            <el-date-picker v-model="dateRange" type="datetimerange" :picker-options="dataOptions" placeholder="选择时间范围" align="right" class="tool-item filter-item">
+            <el-date-picker v-model="dateRange" type="datetimerange" :picker-options="dateOptions" placeholder="选择时间范围" align="right" class="tool-item filter-item">
             </el-date-picker>
     
             <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
             <el-button class="filter-item" type="text" icon="document" @click="handleDownload">导出</el-button>
         </div>
     
-        <el-table :key='tableKey' :data="list" ref="multipleTable" @selection-change="handleSelectionChange" v-loading.body="listLoading" border highlight-current-row style="width: 100%">
+        <el-table :data="list" ref="multipleTable" @selection-change="handleSelectionChange" v-loading.body="listLoading" border highlight-current-row style="width: 100%">
     
             <el-table-column type="selection" min-width="30px">
             </el-table-column>
@@ -34,9 +34,9 @@
                 </template>
             </el-table-column>
     
-            <el-table-column class-name="status-col" label="类型" width="80px">
+            <el-table-column class-name="status-col" label="类型" width="90px">
                 <template scope="scope">
-                    <el-tag :type="scope.row.type | statusTypeFilter">{{scope.row.status | statusShowFilter}}</el-tag>
+                    <el-tag :type="scope.row.type | typeFilter">{{scope.row.type | typeShowFilter}}</el-tag>
                 </template>
             </el-table-column>
     
@@ -48,9 +48,9 @@
                 </template>
             </el-table-column>
     
-            <el-table-column label="主题" :show-overflow-tooltip="true" min-width="400px">
+            <el-table-column label="主题" :show-overflow-tooltip="true" min-width="550px">
                 <template scope="scope">
-                    <span class="link-type" @click="goToDetail(scope.row.id)">{{scope.row.title}}</span>
+                    <span class="link-type" @click="goToDetail(scope.row)">{{scope.row.title}}</span>
                     <el-tag v-for="label in scope.row.labelList" :key="label.guid">{{label.name}}</el-tag>
                 </template>
             </el-table-column>
@@ -71,21 +71,41 @@
 </template>
 
 <script>
+import * as mailListAPI from 'api/mail_list';
+import { parseTime } from 'utils';;
+
 export default {
     name: 'mail_list',
     data() {
         return {
             list: [],
-            total: [],
+            total: 0,
             listLoading: false,
             listQuery: {
                 page: 1,
                 limit: 20,
                 title: '',
-                status: '',
-                sort: ''
+                type: '',
+                sort: '',
+                routeQuery: {}
             },
-            dataOptions: {
+            dateRange: [],
+            multipleSelection: [],
+            typeOptions: [
+                {
+                    value: 'receive',
+                    showValue: '收件'
+                },
+                {
+                    value: 'send',
+                    showValue: '发件'
+                },
+                {
+                    value: 'draft',
+                    showValue: '草稿'
+                }
+            ],
+            dateOptions: {
                 shortcuts: [{
                     text: '最近一周',
                     onClick(picker) {
@@ -111,20 +131,124 @@ export default {
                         picker.$emit('pick', [start, end]);
                     }
                 }]
-            },
-            dateRange: ''
+            }
         }
     },
     created() {
-        this.initPage();
+        this.getList();
+    },
+    filters: {
+        typeFilter(type) {
+            const typeMap = {
+                receive: 'primary',
+                send: 'success',
+                draft: 'warning'
+            };
+            return typeMap[type];
+        },
+        typeShowFilter(type) {
+            const typeShowMap = {
+                receive: '收件',
+                send: '发件',
+                draft: '草稿'
+            };
+            return typeShowMap[type];
+        }
     },
     methods: {
-        initPage() {
-
+        getList() {
+            Object.assign(this.listQuery.routeQuery, this.$route.query);
+            mailListAPI.fetchList(this.listQuery).then(res => {
+                this.list = res.data.items;
+                this.total = res.data.total;
+            })
+        },
+        goToDetail(row) {
+            this.$store.commit('SET_MAIL_ID', row.id);
+            this.$store.commit('SET_MAIL_TYPE', row.type);
+            this.$router.push({ path: '/mail_detail/index' });
+        },
+        handleFilter() {
+            this.getList();
+        },
+        handleSizeChange(val) {
+            this.listQuery.limit = val;
+            this.getList();
+        },
+        handleCurrentChange(val) {
+            this.listQuery.page = val;
+            this.getList();
+        },
+        forward() {
+            const selectedLen = this.multipleSelection.length || 0;
+            if (selectedLen !== 1) {
+                this.$message('请选择一封邮件进行转发');
+                return;
+            }
+            this.$store.commit('SET_MAIL_ID', this.multipleSelection[0].id);
+            this.$store.commit('SET_PAGE_TYPE', 'forward');
+            this.$store.commit('SET_MAIL_TYPE', this.multipleSelection[0].type);
+            this.$router.push({ path: '/mail_send/index' });
+        },
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
+        },
+        handleDelete() {
+            const selectedLen = this.multipleSelection.length || 0;
+            if (selectedLen < 1) {
+                this.$message('请选择邮件进行删除');
+                return;
+            }
+            this.$confirm('是否删除这' + selectedLen + '封邮件?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                const idArr = [];
+                this.multipleSelection.forEach(item => idArr.push(item.id));
+                // 删除的时候业务可能要求带上类型，类型在multipleSelection.type
+                mailListAPI.delMail(idArr).subscribe({
+                    next: () => {
+                        this.$message({
+                            message: '删除成功',
+                            type: 'success',
+                            duration: 2000
+                        });
+                        this.getList();
+                    },
+                    error: () => this.$message({
+                        showClose: true,
+                        message: '删除失败',
+                        type: 'error'
+                    })
+                });
+            }).catch(() => {
+                this.$message('操作已取消');
+            });
+        },
+        handleDownload() {
+            require.ensure([], () => {
+                const { export_json_to_excel } = require('vendor/Export2Excel');
+                const tHeader = ['发件人', '发件邮箱', '主题', '时间'];
+                const filterVal = ['sendName', 'sendMail', 'title', 'date'];
+                const data = this.formatJson(filterVal, this.list);
+                export_json_to_excel(tHeader, data, parseTime(Date.now()) + '邮件列表数据');
+            })
+        },
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                if (~j.indexOf('date')) {
+                    return parseTime(v[j])
+                } else {
+                    return v[j]
+                }
+            }))
         }
     }
 }
 </script>
 <style>
-
+.star {
+    color: #F08A5D
+}
 </style>

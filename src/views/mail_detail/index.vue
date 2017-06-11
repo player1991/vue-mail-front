@@ -8,34 +8,31 @@
                 <el-button v-waves @click="deleteMail" type="primary" icon="delete" size="small">删除</el-button>
     
             </el-button-group>
-            <el-dropdown split-button type="primary" size="small">
+            <el-dropdown @command="handleMark" split-button type="primary" size="small" menu-align="start">
                 标记为
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>黄金糕</el-dropdown-item>
-                    <el-dropdown-item>狮子头</el-dropdown-item>
-                    <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                    <el-dropdown-item>双皮奶</el-dropdown-item>
-                    <el-dropdown-item>蚵仔煎</el-dropdown-item>
+                    <el-dropdown-item command="star">
+                        <i class="fa fa-star download-icon"></i>星标邮件</el-dropdown-item>
+                    <el-dropdown-item v-for="label in labelList" :key="label.id" :command="label.id+''">
+                        <i class="fa fa-bookmark download-icon"></i>{{label.name}}</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown split-button type="primary" size="small">
+            <el-dropdown split-button type="primary" size="small" menu-align="start">
                 附件
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>黄金糕</el-dropdown-item>
-                    <el-dropdown-item>狮子头</el-dropdown-item>
-                    <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                    <el-dropdown-item>双皮奶</el-dropdown-item>
-                    <el-dropdown-item>蚵仔煎</el-dropdown-item>
+                    <el-dropdown-item v-for="file in mail.oldFileList" :key="file.name">
+                        <i class="fa fa-cloud-download download-icon"></i>
+                        <a :href="file.url" download="">{{file.name}}</a>
+                    </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown split-button type="primary" size="small">
+            <el-dropdown split-button type="primary" size="small" menu-align="start">
                 录音
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>黄金糕</el-dropdown-item>
-                    <el-dropdown-item>狮子头</el-dropdown-item>
-                    <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                    <el-dropdown-item>双皮奶</el-dropdown-item>
-                    <el-dropdown-item>蚵仔煎</el-dropdown-item>
+                    <el-dropdown-item v-for="audio in mail.oldAudioList" :key="audio.name">
+                        <i class="fa fa-microphone download-icon"></i>
+                        <a :href="audio.url" download="">{{audio.name}}</a>
+                    </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
         </el-row>
@@ -83,6 +80,7 @@
 
 <script>
 import * as mailDetailAPI from 'api/mail_detail';
+import * as labelAPI from 'api/mail_label';
 import { parseTime } from 'utils/index';
 
 export default {
@@ -100,15 +98,17 @@ export default {
                 sendDate: '',
                 oldFileList: [],
                 oldAudioList: [],
-                labelList: []
+                labelList: [],
+                isStar: false
             },
             loading: true,
             activeGroup: ['target'],
-            mailType: ''
+            mailType: '',
+            labelList: []
         }
     },
     created() {
-        this.getDetail();
+        this.initPage();
     },
     computed: {
         showMailTime: function () {
@@ -116,6 +116,10 @@ export default {
         }
     },
     methods: {
+        initPage() {
+            this.getDetail();
+            this.getLabelList();
+        },
         getDetail() {
             this.loading = true;
             const mailId = this.$store.getters.mailId;
@@ -125,6 +129,9 @@ export default {
                 this.loading = false;
                 this.mail = res.data;
             })
+        },
+        getLabelList() {
+            labelAPI.fetchList().then(res => this.labelList = res.data.pageList)
         },
         reply(isALL) {
             if (isALL) {
@@ -164,6 +171,26 @@ export default {
         },
         delLabel(index) {
             this.mail.labelList.splice(index, 1);
+        },
+        toggleStar() {
+            labelAPI.toggleStar([this.mail.id]).subscribe({
+                next: () => {
+                    this.mail.isStar = !this.mail.isStar;
+                }
+            })
+        },
+        handleMark(labelId) {
+            if (labelId === 'star') {
+                this.toggleStar();
+            } else {
+                labelAPI.markLabel(labelId, [this.mail.id]).subscribe({
+                    next: () => {
+                        const label = this.labelList.filter(item => { if (item.id == labelId) return true })
+                        if (!this.mail.labelList.find((item) => item.id == labelId))
+                            this.mail.labelList.push(label[0]);
+                    }
+                })
+            }
         }
     }
 }
@@ -171,7 +198,6 @@ export default {
 
 <style>
 .tool-bar {
-    background-color: #E5E9F2;
     margin-top: -20px;
     margin-left: -20px;
 }

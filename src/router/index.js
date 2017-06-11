@@ -101,6 +101,12 @@ const MailLabel = () =>
     import('../views/mail_label/index');
 const MailList = () =>
     import('../views/mail_list/index');
+const MailGroup = () => 
+    import('../views/mail_contacts/group');
+const ContactList = () => 
+    import('../views/mail_contacts/index');
+import * as labelAPI from 'api/mail_label';
+import * as groupAPI from 'api/mail_group';
 
 /* permission */
 const Permission = () =>
@@ -149,6 +155,14 @@ export const constantRouterMap = [
         children: [{ path: 'index', component: MailSend, name: '写信' }]
     },
     {
+        path: '/inbox',
+        component: Layout,
+        redirect: '/inbox/index',
+        icon: 'xinrenzhinan',
+        noDropdown: true,
+        children: [{ path: 'index', component: Inbox, name: '收件箱' }]
+    },
+    {
         path: '/mail_detail',
         component: Layout,
         redirect: '/mail_detail/index',
@@ -163,19 +177,18 @@ export const constantRouterMap = [
         children: [{ path: 'index', component: MailList, name: '邮件列表' }]
     },
     {
-        path: '/inbox',
+        path: '/mail_contacts',
         component: Layout,
-        redirect: '/inbox/index',
-        icon: 'xinrenzhinan',
-        noDropdown: true,
-        children: [{ path: 'index', component: Inbox, name: '收件箱' }]
+        redirect: '/mail_contacts/index',
+        hidden: true,
+        children: [{ path: 'index', component: ContactList, name: '联系人列表' }]
     },
     {
         path: '/mail_label',
         component: Layout,
         redirect: '/mail_label/index',
         icon: 'xinrenzhinan',
-        noDropdown: true,
+        hidden: true,
         children: [{ path: 'index', component: MailLabel, name: '邮件标签' }]
     }
 ]
@@ -186,108 +199,169 @@ export default new Router({
     routes: constantRouterMap
 });
 
-export const asyncRouterMap = [{
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/index',
-    name: '权限测试',
-    icon: 'quanxian',
-    meta: { role: ['admin'] },
-    noDropdown: true,
-    children: [{ path: 'index', component: Permission, name: '权限测试页', meta: { role: ['admin'] } }]
-},
-{
-    path: '/components',
-    component: Layout,
-    redirect: '/components/index',
-    name: '组件',
-    icon: 'zujian',
-    children: [
-        { path: 'index', component: componentsIndex, name: '介绍 ' },
-        { path: 'tinymce', component: Tinymce, name: '富文本编辑器' },
-        { path: 'markdown', component: Markdown, name: 'Markdown' },
-        { path: 'jsoneditor', component: JsonEditor, name: 'JSON编辑器' },
-        { path: 'dndlist', component: DndList, name: '列表拖拽' },
-        { path: 'splitpane', component: SplitPane, name: 'SplitPane' },
-        { path: 'avatarupload', component: AvatarUpload, name: '头像上传' },
-        { path: 'dropzone', component: Dropzone, name: 'Dropzone' },
-        { path: 'sticky', component: Sticky, name: 'Sticky' },
-        { path: 'countto', component: CountTo, name: 'CountTo' },
-        { path: 'mixin', component: Mixin, name: '小组件' }
-    ]
-},
-{
-    path: '/charts',
-    component: Layout,
-    redirect: '/charts/index',
-    name: '图表',
-    icon: 'tubiaoleixingzhengchang',
-    children: [
-        { path: 'index', component: chartIndex, name: '介绍' },
-        { path: 'keyboard', component: KeyboardChart, name: '键盘图表' },
-        { path: 'keyboard2', component: KeyboardChart2, name: '键盘图表2' },
-        { path: 'line', component: LineMarker, name: '折线图' },
-        { path: 'mixchart', component: MixChart, name: '混合图表' }
-    ]
-},
-{
-    path: '/errorpage',
-    component: Layout,
-    redirect: 'noredirect',
-    name: '错误页面',
-    icon: '404',
-    children: [
-        { path: '401', component: Err401, name: '401' },
-        { path: '404', component: Err404, name: '404' }
-    ]
-},
-{
-    path: '/errlog',
-    component: Layout,
-    redirect: 'noredirect',
-    name: 'errlog',
-    icon: 'bug',
-    noDropdown: true,
-    children: [{ path: 'log', component: ErrorLog, name: '错误日志' }]
-},
-{
-    path: '/excel',
-    component: Layout,
-    redirect: 'noredirect',
-    name: 'excel',
-    icon: 'EXCEL',
-    noDropdown: true,
-    children: [{ path: 'download', component: ExcelDownload, name: '导出excel' }]
-},
-{
-    path: '/theme',
-    component: Layout,
-    redirect: 'noredirect',
-    name: 'theme',
-    icon: 'theme',
-    noDropdown: true,
-    children: [{ path: 'index', component: Theme, name: '换肤' }]
-},
-{
-    path: '/example',
-    component: Layout,
-    redirect: 'noredirect',
-    name: '综合实例',
-    icon: 'zonghe',
-    children: [{
-        path: '/table',
-        component: TableLayout,
-        redirect: '/table/table',
-        name: 'table',
+export const asyncRouterMap = [
+    {
+        path: '',
+        component: Layout,
+        redirect: 'noredirect',
+        name: '邮件标签',
+        icon: 'xinrenzhinan',
+        children: [{ path: 'mail_label/index', component: MailLabel, name: '标签管理' }]
+    },
+    {
+        path: '',
+        component: Layout,
+        redirect: 'noredirect',
+        name: '通讯录',
+        icon: 'xinrenzhinan',
         children: [
-            { path: 'dynamictable', component: DynamicTable, name: '动态table' },
-            { path: 'dragtable', component: DragTable, name: '拖拽table' },
-            { path: 'inline_edit_table', component: InlineEditTable, name: 'table内编辑' },
-            { path: 'table', component: Table, name: '综合table' }
+            { path: 'mail_contacts/group', component: MailGroup, name: '分组管理' },
+            { path: 'mail_contacts/index', component: ContactList, name: '所有联系人' }
         ]
     },
-    { path: 'form1', component: Form1, name: '综合form1' }
-    ]
-},
-{ path: '*', redirect: '/404', hidden: true }
+    {
+        path: '/permission',
+        component: Layout,
+        redirect: '/permission/index',
+        name: '权限测试',
+        icon: 'quanxian',
+        meta: { role: ['admin'] },
+        noDropdown: true,
+        children: [{ path: 'index', component: Permission, name: '权限测试页', meta: { role: ['admin'] } }]
+    },
+    {
+        path: '/components',
+        component: Layout,
+        redirect: '/components/index',
+        name: '组件',
+        icon: 'zujian',
+        children: [
+            { path: 'index', component: componentsIndex, name: '介绍 ' },
+            { path: 'tinymce', component: Tinymce, name: '富文本编辑器' },
+            { path: 'markdown', component: Markdown, name: 'Markdown' },
+            { path: 'jsoneditor', component: JsonEditor, name: 'JSON编辑器' },
+            { path: 'dndlist', component: DndList, name: '列表拖拽' },
+            { path: 'splitpane', component: SplitPane, name: 'SplitPane' },
+            { path: 'avatarupload', component: AvatarUpload, name: '头像上传' },
+            { path: 'dropzone', component: Dropzone, name: 'Dropzone' },
+            { path: 'sticky', component: Sticky, name: 'Sticky' },
+            { path: 'countto', component: CountTo, name: 'CountTo' },
+            { path: 'mixin', component: Mixin, name: '小组件' }
+        ]
+    },
+    {
+        path: '/charts',
+        component: Layout,
+        redirect: '/charts/index',
+        name: '图表',
+        icon: 'tubiaoleixingzhengchang',
+        children: [
+            { path: 'index', component: chartIndex, name: '介绍' },
+            { path: 'keyboard', component: KeyboardChart, name: '键盘图表' },
+            { path: 'keyboard2', component: KeyboardChart2, name: '键盘图表2' },
+            { path: 'line', component: LineMarker, name: '折线图' },
+            { path: 'mixchart', component: MixChart, name: '混合图表' }
+        ]
+    },
+    {
+        path: '/errorpage',
+        component: Layout,
+        redirect: 'noredirect',
+        name: '错误页面',
+        icon: '404',
+        children: [
+            { path: '401', component: Err401, name: '401' },
+            { path: '404', component: Err404, name: '404' }
+        ]
+    },
+    {
+        path: '/errlog',
+        component: Layout,
+        redirect: 'noredirect',
+        name: 'errlog',
+        icon: 'bug',
+        noDropdown: true,
+        children: [{ path: 'log', component: ErrorLog, name: '错误日志' }]
+    },
+    {
+        path: '/excel',
+        component: Layout,
+        redirect: 'noredirect',
+        name: 'excel',
+        icon: 'EXCEL',
+        noDropdown: true,
+        children: [{ path: 'download', component: ExcelDownload, name: '导出excel' }]
+    },
+    {
+        path: '/theme',
+        component: Layout,
+        redirect: 'noredirect',
+        name: 'theme',
+        icon: 'theme',
+        noDropdown: true,
+        children: [{ path: 'index', component: Theme, name: '换肤' }]
+    },
+    {
+        path: '/example',
+        component: Layout,
+        redirect: 'noredirect',
+        name: '综合实例',
+        icon: 'zonghe',
+        children: [{
+            path: '/table',
+            component: TableLayout,
+            redirect: '/table/table',
+            name: 'table',
+            children: [
+                { path: 'dynamictable', component: DynamicTable, name: '动态table' },
+                { path: 'dragtable', component: DragTable, name: '拖拽table' },
+                { path: 'inline_edit_table', component: InlineEditTable, name: 'table内编辑' },
+                { path: 'table', component: Table, name: '综合table' }
+            ]
+        },
+        { path: 'form1', component: Form1, name: '综合form1' }
+        ]
+    },
+    { path: '*', redirect: '/404', hidden: true }
+
 ];
+
+labelAPI.fetchList().then(res => {
+    const labelList = res.data.labelList;
+    let labelMenuIndex;
+    asyncRouterMap.forEach((item, index) => {
+        if (item.name === '邮件标签') {
+            labelMenuIndex = index;
+        }
+    })
+    labelList.forEach(item => {
+        asyncRouterMap[labelMenuIndex].children.push({
+            path: 'mail_list/index/' + item.id,
+            component: MailList,
+            name: item.name,
+            query: {
+                labelId: item.id
+            }
+        })
+    });
+});
+
+groupAPI.fetchList().then(res => {
+    const groupList = res.data.groupList;
+    let groupMenuIndex;
+    asyncRouterMap.forEach((item, index) => {
+        if (item.name === '通讯录') {
+            groupMenuIndex = index;
+        }
+    })
+    groupList.forEach(item => {
+        asyncRouterMap[groupMenuIndex].children.push({
+            path: 'mail_contacts/index/' + item.id,
+            component: ContactList,
+            name: item.name,
+            query: {
+                groupId: item.id
+            }
+        })
+    });
+})
