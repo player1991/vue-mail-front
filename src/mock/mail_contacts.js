@@ -49,8 +49,8 @@ export default {
     getList: config => {
         const { name, mail, groupId, page, limit } = param2Obj(config.url);
         let mockList = list.filter(item => {
-            if (name && item.name !== name) return false;
-            if (mail && item.mail !== mail) return false;
+            if (name && item.name.indexOf(name) < 0) return false;
+            if (mail && item.mail.indexOf(mail) < 0) return false;
             if (groupId && item.groupId !== groupId) return false;
             return true;
         });

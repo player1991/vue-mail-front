@@ -180,7 +180,7 @@ export const constantRouterMap = [
         component: Layout,
         redirect: '/mail_contacts/index',
         hidden: true,
-        children: [{ path: 'index', component: ContactList, name: '联系人列表' }]
+        children: [{ path: 'index/:groupId?', component: ContactList, name: '联系人列表' }]
     },
     {
         path: '/mail_label',

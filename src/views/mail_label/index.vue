@@ -150,7 +150,6 @@ export default {
                     }
                 })
             })
-
         },
         goToMailList(id) {
             this.$router.push({ path: '/mail_list/index', query: { labelId: id } })

@@ -5,7 +5,8 @@ const mail = {
         mailId: '',
         draftId: '',
         pageType: '',
-        mailType: ''
+        mailType: '',
+        target: null
     },
     mutations: {
         SET_MAIL_ID: (state, mailId) => {
@@ -19,6 +20,9 @@ const mail = {
         },
         SET_MAIL_TYPE: (state, mailType) => {
             state.mailType = mailType;
+        },
+        SET_TARGET: (state, targetList) => {
+            state.target = targetList.slice();
         }
     }
 }

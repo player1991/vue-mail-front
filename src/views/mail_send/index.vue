@@ -173,6 +173,18 @@ export default {
                         default:
                     }
                 });
+            } else if (pageType && pageType === 'add') {
+                const target = this.$store.getters.target;
+                if (target) {
+                    if (target === 'all') {
+                        this.target = this.contacts;
+                    } else {
+                        target.forEach(item => item.show = item.name + '<' + item.mail + '>');
+                        this.target = target;
+                    }
+                    this.$store.commit('SET_TARGET', null);
+                }
+
             }
         },
         addContact(newTag) {
