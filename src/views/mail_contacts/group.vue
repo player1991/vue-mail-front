@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container calendar-list-container">
+    <div class="app-container calendar-list-container group-container">
     
         <div class="filter-container">
             <el-button @click="openForm('add')" type="primary" icon="plus">新增分组</el-button>
@@ -31,13 +31,11 @@
         </div>
     
         <el-dialog :title="groupOperation | operationFilter" :visible.sync="formVisible">
-            <el-form :model="form">
-                <el-form-item label="分组名称" label-width="100px">
-                    <el-input v-model="form.name" auto-complete="off" :maxlength="15" :minlength="1"></el-input>
+            <el-form :model="form" :rules="rules" ref="form">
+                <el-form-item label="分组名称" prop="name" label-width="100px">
+                    <el-input v-model="form.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-transfer v-model="value" filterable :left-default-checked="[2, 3]" :right-default-checked="[]" :props="{key: 'mail',label: 'name'}" :render-content="renderFunc" :titles="['联系人', '分组联系人']" :button-texts="['取消添加', '添加到该分组']" :footer-format="{noChecked: '${total}',hasChecked: '${checked}/${total}'}" @change="handleContactsChange" :data="contacts">
-                    <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
-                    <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button>
+                <el-transfer v-model="value" filterable :filter-method="filterContacts" :left-default-checked="[2, 3]" :right-default-checked="rightChecked" :props="{key: 'mail',label: 'name'}" :render-content="renderFunc" :titles="['联系人', '分组联系人']" :button-texts="['取消添加', '添加到该分组']" :footer-format="{noChecked: '${total}',hasChecked: '${checked}/${total}'}" :data="contacts">
                 </el-transfer>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -66,14 +64,23 @@ export default {
             formVisible: false,
             form: {
                 name: '',
-                color: '#20a0ff'
+                contacts: []
             },
             contacts: [],
-            value: []
+            value: [],
+            rightChecked: [],
+            rules: {
+                name: [
+                    { required: true, message: '请输入分组名称', trigger: 'blur' },
+                    { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
+                ]
+            }
         }
     },
     beforeCreate() {
-        contactsAPI.fetchList().then(res => this.contacts = res.data.contacts);
+        contactsAPI.fetchList().then(res => {
+            this.contacts = res.data.contacts
+        });
     },
     created() {
         this.initPage();
@@ -102,11 +109,7 @@ export default {
             contactsAPI.fetchList().then(res => this.contacts = res.data.contacts);
         },
         renderFunc(h, option) {
-            debugger
-            const span = document.createElement("span");
-            span.innerText = option.name + '-' + option.mail;
-            return span;
-            // return <span>{option.name}-{option.mail}</span>;
+            return h('span', {}, option.name + '-' + option.mail);
         },
         handleSizeChange(val) {
             this.listQuery.limit = val;
@@ -118,7 +121,8 @@ export default {
         },
         initForm() {
             this.form = {
-                name: ''
+                name: '',
+                contacts: []
             };
         },
         openForm(operation, group) {
@@ -127,30 +131,45 @@ export default {
             if (operation === 'add') {
                 this.initForm();
             } else {
-                this.form = group;
+                this.contacts.forEach(contact => {
+                    group.contacts.forEach(item => {
+                        if (contact.mail === item.mail) {
+                            this.value.push(item.mail);
+                        }
+                    })
+                })
+                this.form.name = group.name;
             }
         },
         submit() {
-            const handle = this.groupOperation === 'add' ? groupAPI.add : groupAPI.edit;
-            handle(this.form).subscribe({
-                next: () => {
-                    this.$message({
-                        type: 'success',
-                        message: '操作成功',
-                        duration: 1000
-                    });
-                    setTimeout(() => {
-                        this.formVisible = false;
-                        this.getList();
-                    }, 1000)
-                },
-                error: () => {
-                    this.$message({
-                        type: 'error',
-                        message: '操作失败'
+            this.$refs.form.validate(valid => {
+                if (!valid) {
+                    // console.log('error submit!!');
+                    return;
+                } else {
+                    const handle = this.groupOperation === 'add' ? groupAPI.add : groupAPI.edit;
+                    this.form.contacts = this.value;
+                    handle(this.form).subscribe({
+                        next: () => {
+                            this.$message({
+                                type: 'success',
+                                message: '操作成功',
+                                duration: 1000
+                            });
+                            setTimeout(() => {
+                                this.formVisible = false;
+                                this.getList();
+                            }, 1000)
+                        },
+                        error: () => {
+                            this.$message({
+                                type: 'error',
+                                message: '操作失败'
+                            })
+                        }
                     })
                 }
-            })
+            });
         },
         delGroup(id) {
             this.$confirm('是否删除该分组？', '确认', {
@@ -168,17 +187,31 @@ export default {
                     }
                 })
             })
-
         },
         goToGroup(id) {
-            this.$router.push({ path: '/mail_list/index', query: { groupId: id } })
+            this.$router.push({ path: '/mail_contacts/index', query: { groupId: id } })
         },
-        handleContactsChange() {
-
+        filterContacts(query, item) {
+            return item.name.indexOf(query) > -1 || item.mail.indexOf(query) > -1;
         }
     }
 }
 </script>
 <style>
+.transfer-footer {
+    margin-left: 20px;
+    padding: 6px 5px;
+}
 
+.el-transfer-panel {
+    min-width: 320px;
+}
+
+.group-container .el-dialog--small {
+    width: 60%;
+}
+
+.group-container .el-transfer-panel__body {
+    height: 260px;
+}
 </style>

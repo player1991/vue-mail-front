@@ -9,24 +9,24 @@ for (let i = 0; i < count; i++) {
         name: '@ctitle',
         contacts: [
             {
-                name: '@cname',
-                mail: '@email'
+                name: '曾艳芬',
+                mail: 'zengyanfen@snh48.com'
             },
             {
-                name: '@cname',
-                mail: '@email'
+                name: '鞠婧祎',
+                mail: 'jujingyi@snh48.com'
             },
             {
-                name: '@cname',
-                mail: '@email'
+                name: '黄婷婷',
+                mail: 'huangtingting@snh48.com'
             },
             {
-                name: '@cname',
-                mail: '@email'
+                name: '冯薪朵',
+                mail: 'fengxinduo@snh48.com'
             },
             {
-                name: '@cname',
-                mail: '@email'
+                name: '陆婷',
+                mail: 'luting@snh48.com'
             }
         ]
     }));

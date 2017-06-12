@@ -34,12 +34,20 @@ for (let i = 0; i < count; i++) {
 
 export default {
     getList: config => {
-        debugger
-        const { type, title, dateRange, page, limit } = param2Obj(config.url);
-        let mockList = List.filter(item => {
+        const { type, title, startDate, stopDate, page, limit, routeQuery } = param2Obj(config.url);
+        const mockList = List.filter(item => {
             if (type && item.type !== type) return false;
             if (title && item.title.indexOf(title) < 0) return false;
-            // if (dataRange[0] && item.dateRange[0]) return false;
+            if (startDate && item.date < startDate) return false;
+            if (stopDate && item.date > stopDate) return false;
+            // if (routeQuery) {
+            //     // 路由查询参数
+            //     for (const field in routeQuery) {
+            //         if (item[field] === routeQuery[field]) {
+            //             return true;
+            //         }
+            //     }
+            // }
             return true;
         });
         const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1));

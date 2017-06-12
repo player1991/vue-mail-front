@@ -7,111 +7,110 @@ import Layout from '../views/layout/Layout';
 /* login */
 import Login from '../views/login/';
 const authRedirect = () =>
-    import ('../views/login/authredirect');
+    import('../views/login/authredirect');
 const sendPWD = () =>
-    import ('../views/login/sendpwd');
+    import('../views/login/sendpwd');
 const reset = () =>
-    import ('../views/login/reset');
+    import('../views/login/reset');
 
 /* dashboard */
 const dashboard = () =>
-    import ('../views/dashboard/index');
+    import('../views/dashboard/index');
 
 /* Introduction */
 const Introduction = () =>
-    import ('../views/introduction/index');
+    import('../views/introduction/index');
 
 /* components */
 const componentsIndex = () =>
-    import ('../views/components/index');
+    import('../views/components/index');
 const Tinymce = () =>
-    import ('../views/components/tinymce');
+    import('../views/components/tinymce');
 const Markdown = () =>
-    import ('../views/components/markdown');
+    import('../views/components/markdown');
 const JsonEditor = () =>
-    import ('../views/components/jsoneditor');
+    import('../views/components/jsoneditor');
 const DndList = () =>
-    import ('../views/components/dndlist');
+    import('../views/components/dndlist');
 const AvatarUpload = () =>
-    import ('../views/components/avatarUpload');
+    import('../views/components/avatarUpload');
 const Dropzone = () =>
-    import ('../views/components/dropzone');
+    import('../views/components/dropzone');
 const Sticky = () =>
-    import ('../views/components/sticky');
+    import('../views/components/sticky');
 const SplitPane = () =>
-    import ('../views/components/splitpane');
+    import('../views/components/splitpane');
 const CountTo = () =>
-    import ('../views/components/countTo');
+    import('../views/components/countTo');
 const Mixin = () =>
-    import ('../views/components/mixin');
+    import('../views/components/mixin');
 
 
 /* charts */
 const chartIndex = () =>
-    import ('../views/charts/index');
+    import('../views/charts/index');
 const KeyboardChart = () =>
-    import ('../views/charts/keyboard');
+    import('../views/charts/keyboard');
 const KeyboardChart2 = () =>
-    import ('../views/charts/keyboard2');
+    import('../views/charts/keyboard2');
 const LineMarker = () =>
-    import ('../views/charts/line');
+    import('../views/charts/line');
 const MixChart = () =>
-    import ('../views/charts/mixchart');
+    import('../views/charts/mixchart');
 
 /* error page */
 const Err404 = () =>
-    import ('../views/error/404');
+    import('../views/error/404');
 const Err401 = () =>
-    import ('../views/error/401');
+    import('../views/error/401');
 
 /* error log */
 const ErrorLog = () =>
-    import ('../views/errlog/index');
+    import('../views/errlog/index');
 
 /* excel */
 const ExcelDownload = () =>
-    import ('../views/excel/index');
+    import('../views/excel/index');
 
 /* theme  */
 const Theme = () =>
-    import ('../views/theme/index');
+    import('../views/theme/index');
 
 /* example*/
 const TableLayout = () =>
-    import ('../views/example/table/index');
+    import('../views/example/table/index');
 const DynamicTable = () =>
-    import ('../views/example/table/dynamictable');
+    import('../views/example/table/dynamictable');
 const Table = () =>
-    import ('../views/example/table/table');
+    import('../views/example/table/table');
 const DragTable = () =>
-    import ('../views/example/table/dragTable');
+    import('../views/example/table/dragTable');
 const InlineEditTable = () =>
-    import ('../views/example/table/inlineEditTable');
+    import('../views/example/table/inlineEditTable');
 const Form1 = () =>
-    import ('../views/example/form1');
+    import('../views/example/form1');
 
 // mail page
 const Inbox = () =>
-    import ('../views/inbox/index');
+    import('../views/inbox/index');
 const MailSend = () =>
-    import ('../views/mail_send/index');
+    import('../views/mail_send/index');
 const MailDetail = () =>
     import('../views/mail_detail/index');
 const MailLabel = () =>
     import('../views/mail_label/index');
 const MailList = () =>
     import('../views/mail_list/index');
-const MailGroup = () => 
+const MailGroup = () =>
     import('../views/mail_contacts/group');
-const ContactList = () => 
+const ContactList = () =>
     import('../views/mail_contacts/index');
 import * as labelAPI from 'api/mail_label';
 import * as groupAPI from 'api/mail_group';
 
 /* permission */
 const Permission = () =>
-    import ('../views/permission/index');
-
+    import('../views/permission/index');
 
 Vue.use(Router);
 
@@ -174,7 +173,7 @@ export const constantRouterMap = [
         component: Layout,
         redirect: '/mail_list/index',
         hidden: true,
-        children: [{ path: 'index', component: MailList, name: '邮件列表' }]
+        children: [{ path: 'index/:labelId?', component: MailList, name: '邮件列表' }]
     },
     {
         path: '/mail_contacts',
@@ -189,7 +188,7 @@ export const constantRouterMap = [
         redirect: '/mail_label/index',
         icon: 'xinrenzhinan',
         hidden: true,
-        children: [{ path: 'index', component: MailLabel, name: '邮件标签' }]
+        children: [{ path: 'index', component: MailLabel }]
     }
 ]
 
@@ -203,7 +202,7 @@ export const asyncRouterMap = [
     {
         path: '',
         component: Layout,
-        redirect: 'noredirect',
+        redirect: 'mail_label/index',
         name: '邮件标签',
         icon: 'xinrenzhinan',
         children: [{ path: 'mail_label/index', component: MailLabel, name: '标签管理' }]

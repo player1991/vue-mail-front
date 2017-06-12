@@ -72,7 +72,7 @@
 
 <script>
 import * as mailListAPI from 'api/mail_list';
-import { parseTime } from 'utils';;
+import { parseTime } from 'utils';
 
 export default {
     name: 'mail_list',
@@ -86,6 +86,8 @@ export default {
                 limit: 20,
                 title: '',
                 type: '',
+                startDate: '',
+                stopDate: '',
                 sort: '',
                 routeQuery: {}
             },
@@ -157,7 +159,11 @@ export default {
     },
     methods: {
         getList() {
-            Object.assign(this.listQuery.routeQuery, this.$route.query);
+            if (this.dateRange.length === 2) {
+                this.listQuery.startDate = this.dateRange[0].getTime();
+                this.listQuery.stopDate = this.dateRange[1].getTime();
+            }
+            Object.assign(this.listQuery.routeQuery, this.$route.params, this.$route.query);
             mailListAPI.fetchList(this.listQuery).then(res => {
                 this.list = res.data.items;
                 this.total = res.data.total;

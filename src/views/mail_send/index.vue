@@ -81,7 +81,7 @@
 
 <script>
 import Tinymce from 'components/Tinymce';
-import * as contactsAPI from 'api/contacts';
+import * as contactsAPI from 'api/mail_contacts';
 import * as mailSendAPI from 'api/mail_send';
 import * as mailDetailAPI from 'api/mail_detail';
 import { isEmail, isEmpty, getType } from 'utils/validate';
@@ -126,11 +126,11 @@ export default {
         getContacts() {
             this.loading = true;
             return Observable.create(observer => {
-                contactsAPI.fetchContacts().then(response => {
-                    response.data.forEach(item => {
+                contactsAPI.fetchList().then(res => {
+                    res.data.contacts.forEach(item => {
                         item.show = item.name + '<' + item.mail + '>';
                     });
-                    this.contacts = response.data;
+                    this.contacts = res.data.contacts;
                     this.loading = false;
                     observer.next();
                 })
