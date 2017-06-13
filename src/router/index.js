@@ -122,6 +122,7 @@ Vue.use(Router);
  * meta : { role: ['admin'] }  will control the page role
  **/
 
+// 所有权限通用路由表,如首页和登录页和一些不用权限的公用页面
 export const constantRouterMap = [
     { path: '/login', component: Login, hidden: true },
     { path: '/authredirect', component: authRedirect, hidden: true },
@@ -192,12 +193,14 @@ export const constantRouterMap = [
     }
 ]
 
+// 实例化vue的时候只挂载constantRouter
 export default new Router({
     // mode: 'history', //后端支持可开
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRouterMap
 });
 
+// 异步挂载的路由,动态需要根据权限加载的路由表
 export const asyncRouterMap = [
     {
         path: '',

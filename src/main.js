@@ -90,7 +90,7 @@ router.afterEach(() => {
 
 // 生产环境错误日志
 if (process.env === 'production') {
-  Vue.config.errorHandler = function(err, vm) {
+  Vue.config.errorHandler = function (err, vm) {
     console.log(err, window.location.href);
     errLog.pushLog({
       err,
@@ -117,5 +117,3 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app');
-
-

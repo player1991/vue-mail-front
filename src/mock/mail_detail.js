@@ -8,6 +8,7 @@ function mockReceiveMail(mailId) {
         sender: '@cname',
         sendMail: '@email',
         receiveDate: +Mock.Random.date('T'),
+        'isStar|1': true,
         target: [
             {
                 name: '曾艳芬',

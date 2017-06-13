@@ -57,14 +57,14 @@
     
         <el-dialog :title="contactOperation | operationFilter" :visible.sync="formVisible">
             <el-form :model="form" :rules="rules" ref="form">
+                <el-form-item label="选择头像" label-width="100px">
+                    <img class="avatar" :src="form.avatarUrl" @click="showCropper">
+                </el-form-item>
                 <el-form-item label="姓名" prop="name" label-width="100px">
                     <el-input v-model="form.name" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="邮箱" prop="mail" label-width="100px">
                     <el-input v-model="form.mail" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="选择头像" label-width="100px">
-    
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -72,14 +72,17 @@
                 <el-button type="primary" @click="submit()">确 定</el-button>
             </div>
         </el-dialog>
+        <ImageCropper :width="300" :height="300" url="https://httpbin.org/post" @crop-upload-success="cropSuccess" v-show="imageCropperShow" :key="imageCropperKey" />
     </div>
 </template>
 <script>
 import * as contactsAPI from 'api/mail_contacts';
 import { parseTime } from 'utils/index';
+import ImageCropper from 'components/ImageCropper';
 
 export default {
     name: 'contacts_list',
+    components: { ImageCropper },
     data() {
         return {
             list: [],
@@ -94,6 +97,8 @@ export default {
             selected: [],
             contactOperation: '',
             formVisible: false,
+            imageCropperShow: false,
+            imageCropperKey: 0,
             form: {
                 name: '',
                 mail: '',
@@ -164,7 +169,7 @@ export default {
             this.form = {
                 name: '',
                 mail: '',
-                avatar: ''
+                avatarUrl: ''
             };
         },
         openForm(operation, contact, e) {
@@ -176,6 +181,15 @@ export default {
             } else {
                 this.form = contact;
             }
+        },
+        showCropper() {
+            debugger
+            this.imageCropperShow = true;
+        },
+        cropSuccess(resData) {
+            this.imageCropperKey += 1;
+            this.imageCropperShow = false;
+            this.form.avatarUrl = resData.files.avatar;
         },
         submit() {
             this.$refs.form.validate(valid => {
@@ -200,11 +214,8 @@ export default {
                             })
                         }
                     })
-                } else {
-
                 }
             })
-
         },
         del() {
             const length = this.selected.length;
@@ -299,5 +310,10 @@ export default {
 .card-btn {
     margin-left: 5px;
     vertical-align: 1px;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
 }
 </style>

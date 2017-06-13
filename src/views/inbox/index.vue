@@ -20,7 +20,7 @@
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="star">
                         <i class="fa fa-star download-icon"></i>星标邮件</el-dropdown-item>
-                    <el-dropdown-item v-for="label in labelList" :key="label.id" :command="label.id">
+                    <el-dropdown-item v-for="label in labelList" :key="label.id" :command="label.id + ''">
                         <i class="fa fa-bookmark download-icon"></i>{{label.name}}</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -290,7 +290,6 @@ export default {
             }))
         },
         toggleStar(row) {
-            debugger
             const idArr = [];
             if (row) {
                 idArr.push(row.id);

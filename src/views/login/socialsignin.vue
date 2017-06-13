@@ -19,8 +19,8 @@
       methods: {
         wechatHandleClick(thirdpart) {
           this.$store.commit('SET_AUTH_TYPE', thirdpart);
-          const appid = 'xxxxx';
-          const redirect_uri = encodeURIComponent('xxx/redirect?redirect=' + window.location.origin + '/authredirect');
+          const appid = 'wxbdc5610cc59c1631';
+          const redirect_uri = encodeURIComponent('wxbdc5610cc59c1631/redirect?redirect=' + window.location.origin + '/authredirect');
           const url = 'https://open.weixin.qq.com/connect/qrconnect?appid=' + appid + '&redirect_uri=' + redirect_uri + '&response_type=code&scope=snsapi_login#wechat_redirect';
           openWindow(url, thirdpart, 540, 540);
         },

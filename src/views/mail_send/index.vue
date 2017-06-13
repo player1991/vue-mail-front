@@ -184,7 +184,6 @@ export default {
                     }
                     this.$store.commit('SET_TARGET', null);
                 }
-
             }
         },
         addContact(newTag) {
@@ -306,33 +305,60 @@ export default {
         // 添加到formData，需要符合formData的格式
         appendToFormData(form, data) {
             // 遍历要添加的字段
-            for (const field in data) {
-                // 如果该字段的值是对象且不为空
-                if (typeof data[field] === 'object' && !isEmpty(data[field])) {
-                    // 数组对象
-                    if (getType(data[field]) === 'Array') {
-                        data[field].forEach((item, index) => {
-                            // 数组项如果还是对象
-                            if (getType(item) === 'Object') {
-                                // 遍历数组项的属性
-                                for (const itemField in item) {
-                                    form.append(field + '[' + index + '].' + itemField, item[itemField]);
+            Object.keys(data).forEach(field => {
+                // 如果该字段的值是对象
+                if (typeof data[field] === 'object') {
+                    if (!isEmpty(data[field])) { // 且不为空
+                        if (getType(data[field]) === 'Array') { // 数组对象
+                            data[field].forEach((item, index) => {
+                                if (getType(item) === 'Object') {  // 数组项如果还是对象
+                                    // 遍历数组项的属性
+                                    Object.keys(item).forEach(itemField => {
+                                        form.append(field + '[' + index + '].' + itemField, item[itemField]);
+                                    })
+                                } else {
+                                    form.append(field + '[' + index + ']', item);
                                 }
-                            } else {
-                                form.append(field + '[' + index + ']', item);
-                            }
-                        });
-                    } else {
-                        // 非数组的对象
-                        for (const fieldKey in data[field]) {
-                            form.append(field + '.' + fieldKey, data[field][fieldKey])
+                            });
+                        } else {
+                            // 非数组的对象
+                            Object.keys(data[field]).forEach(fieldKey => {
+                                form.append(field + '.' + fieldKey, data[field][fieldKey])
+                            })
                         }
                     }
                 } else {
                     // 最简单的情况，字段值非对象，直接append
                     form.append(field, data[field]);
                 }
-            }
+            })
+            // for (const field in data) {
+            //     // 如果该字段的值是对象且不为空
+            //     if (typeof data[field] === 'object' && !isEmpty(data[field])) {
+            //         // 数组对象
+            //         if (getType(data[field]) === 'Array') {
+            //             data[field].forEach((item, index) => {
+            //                 // 数组项如果还是对象
+            //                 if (getType(item) === 'Object') {
+            //                     // 遍历数组项的属性
+            //                     for (const itemField in item) {
+            //                         form.append(field + '[' + index + '].' + itemField, item[itemField]);
+            //                     }
+            //                 } else {
+            //                     form.append(field + '[' + index + ']', item);
+            //                 }
+            //             });
+            //         } else {
+            //             // 非数组的对象
+            //             for (const fieldKey in data[field]) {
+            //                 form.append(field + '.' + fieldKey, data[field][fieldKey])
+            //             }
+            //         }
+            //     } else {
+            //         // 最简单的情况，字段值非对象，直接append
+            //         form.append(field, data[field]);
+            //     }
+            // }
         },
         initMail() {
             for (const field in this.mail) {

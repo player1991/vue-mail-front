@@ -39,6 +39,7 @@
         <div class="mail-info">
             <div class="title-info">
                 <span class="mail-title">{{mail.title}}</span>
+                <i class="detail-mark-star fa" @click="toggleStar()" v-bind:class="[mail.isStar? 'fa-star':'fa-star-o']"></i>
                 <el-tag v-for="(label, index) in mail.labelList" :key="label.id" :closable="true" :color="label.color" :close-transition="false" @close="delLabel(index)" class="label-item">
                     {{label.name}}
                 </el-tag>
@@ -49,7 +50,7 @@
                 <{{mail.sendMail}}>;
             </div>
             <div>
-                <el-tag type="primary" class="info-tag">时间&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>{{showMailTime | parseTime }}
+                <el-tag type="primary" class="info-tag">时间&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>{{showMailTime | parseTime(('{y}-{m}-{d} {h}:{i}')) }}
             </div>
             <el-row>
                 <el-col :span="1">
@@ -111,7 +112,7 @@ export default {
         this.initPage();
     },
     computed: {
-        showMailTime: function () {
+        showMailTime() {
             return this.mail.receiveDate || this.mail.sendData;
         }
     },
@@ -131,7 +132,7 @@ export default {
             })
         },
         getLabelList() {
-            labelAPI.fetchList().then(res => this.labelList = res.data.pageList)
+            labelAPI.fetchList().then(res => this.labelList = res.data.labelList)
         },
         reply(isALL) {
             if (isALL) {
@@ -175,6 +176,7 @@ export default {
         toggleStar() {
             labelAPI.toggleStar([this.mail.id]).subscribe({
                 next: () => {
+                    debugger
                     this.mail.isStar = !this.mail.isStar;
                 }
             })
@@ -186,8 +188,9 @@ export default {
                 labelAPI.markLabel(labelId, [this.mail.id]).subscribe({
                     next: () => {
                         const label = this.labelList.filter(item => { if (item.id == labelId) return true })
-                        if (!this.mail.labelList.find((item) => item.id == labelId))
+                        if (!this.mail.labelList.find((item) => item.id == labelId)) {
                             this.mail.labelList.push(label[0]);
+                        }
                     }
                 })
             }
@@ -222,6 +225,13 @@ export default {
 .mail-title {
     font-size: 18px;
     vertical-align: -3px
+}
+
+.detail-mark-star {
+    font-size: 18px;
+    vertical-align: -3px;
+    color: #F08A5D;
+    cursor: pointer;
 }
 
 .label-item {
