@@ -24,16 +24,11 @@
                         <i class="fa fa-bookmark download-icon"></i>{{label.name}}</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
-            <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
+            <el-input @keyup.enter.native="handleFilter" style="width: 300px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
             </el-input>
     
-            <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.status" placeholder="状态">
+            <el-select clearable style="width: 120px" class="filter-item" v-model="listQuery.status" placeholder="状态">
                 <el-option v-for="status in statusOptions" :key="status.value" :label="status.showValue" :value="status.value">
-                </el-option>
-            </el-select>
-    
-            <el-select @change='handleFilter' style="width: 120px" class="filter-item" v-model="listQuery.sort" placeholder="排序">
-                <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key">
                 </el-option>
             </el-select>
     
@@ -41,7 +36,7 @@
             <el-button class="filter-item" type="text" icon="document" @click="handleDownload">导出</el-button>
         </div>
     
-        <el-table :key='tableKey' :data="list" ref="multipleTable" @selection-change="handleSelectionChange" v-loading.body="listLoading" border highlight-current-row style="width: 100%">
+        <el-table :key='tableKey' :data="list" ref="multipleTable" @sort-change="customSort" @selection-change="handleSelectionChange" v-loading.body="listLoading" border highlight-current-row style="width: 100%">
     
             <el-table-column type="selection" min-width="30px">
             </el-table-column>
@@ -54,13 +49,13 @@
                 </template>
             </el-table-column>
     
-            <el-table-column class-name="status-col" label="状态" width="80px">
+            <el-table-column prop="status" sortable="custom" class-name="status-col" label="状态" width="80px">
                 <template scope="scope">
                     <el-tag :type="scope.row.status | statusTypeFilter">{{scope.row.status | statusShowFilter}}</el-tag>
                 </template>
             </el-table-column>
     
-            <el-table-column align="center" label="发件人">
+            <el-table-column prop="sendName" sortable="custom" align="center" label="发件人">
                 <template scope="scope">
                     <el-tooltip class="item" effect="dark" :content="scope.row.sendMail" placement="top">
                         <span>{{scope.row.sendName}}</span>
@@ -68,20 +63,20 @@
                 </template>
             </el-table-column>
     
-            <el-table-column label="主题" :show-overflow-tooltip="true" min-width="400px">
+            <el-table-column prop="title" sortable="custom" label="主题" :show-overflow-tooltip="true" min-width="400px">
                 <template scope="scope">
                     <span class="link-type" @click="goToDetail(scope.row.id)">{{scope.row.title}}</span>
                     <el-tag v-for="label in scope.row.labelList" :key="label.guid">{{label.name}}</el-tag>
                 </template>
             </el-table-column>
     
-            <el-table-column align="center" label="接收时间" width="150px">
+            <el-table-column prop="receiveDate" sortable="custom" align="center" label="接收时间" width="150px">
                 <template scope="scope">
                     <span>{{scope.row.receiveDate | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
                 </template>
             </el-table-column>
     
-            <el-table-column align="center" label="阅读时间" width="150px">
+            <el-table-column prop="readDate" sortable="custom" align="center" label="阅读时间" width="150px">
                 <template scope="scope">
                     <span>{{scope.row.readDate | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
                 </template>
@@ -113,14 +108,9 @@ export default {
                 limit: 20,
                 title: undefined,
                 status: undefined,
-                sort: ''
+                sort: '',
+                order: ''
             },
-            sortOptions: [
-                { label: '按主题升序', key: '+title' },
-                { label: '按主题降序', key: '-title' },
-                { label: '按发件人升序', key: '+sender' },
-                { label: '按发件人降序', key: '-sender' }
-            ],
             statusOptions: [
                 {
                     value: 0,
@@ -194,6 +184,11 @@ export default {
         },
         handleCurrentChange(val) {
             this.listQuery.page = val;
+            this.getList();
+        },
+        customSort(sortObj){
+            this.listQuery.sort = sortObj.prop;
+            this.listQuery.order = sortObj.order;
             this.getList();
         },
         timeFilter(time) {

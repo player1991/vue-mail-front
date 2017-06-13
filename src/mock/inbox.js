@@ -35,43 +35,21 @@ for (let i = 0; i < count; i++) {
 
 export default {
     getList: config => {
-        const { status, title, page, limit, sort } = param2Obj(config.url);
-        let mockList = List.filter(item => {
+        const { status, title, page, limit, sort, order } = param2Obj(config.url);
+        const mockList = List.filter(item => {
             if (status && item.status !== +status) return false;
             if (title && item.title.indexOf(title) < 0) return false;
             return true;
         });
-        if (sort === '+title') {
-            const sortByTitleASC = function(a, b) {
-                const aTitle = a.title,
-                      bTitle = b.title;
-                return aTitle - bTitle;
+        function orderFunc(a, b) {
+            if (order === 'ascending') {
+                return a[sort] - b[sort];
+            } else {
+                return b[sort] - a[sort];
             }
-            mockList = mockList.reverse(sortByTitleASC);
         }
-        if (sort === '-title') {
-            const sortByTitle = function(a, b) {
-                const aTitle = a.title,
-                      bTitle = b.title;
-                return bTitle - aTitle;
-            }
-            mockList = mockList.reverse(sortByTitle);
-        }
-        if (sort === '+sender') {
-            const sortByNameASC = function(a, b) {
-                const aName = a.sendName,
-                    bName = b.sendName;
-                return aName - bName;
-            }
-            mockList = mockList.reverse(sortByNameASC);
-        }
-        if (sort === '-sender') {
-            const sortByName = function(a, b) {
-                const aName = a.sendName,
-                    bName = b.sendName;
-                return bName - aName;
-            }
-            mockList = mockList.reverse(sortByName);
+        if (sort) {
+           mockList.sort(orderFunc);
         }
         const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1));
         return {
