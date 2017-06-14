@@ -10,9 +10,7 @@ for (let i = 0; i < count; i++) {
         'isStar|1': true,
         'isHaveFile|1': true,
         'isHaveAudio|1': true,
-        'status|1': [0, 1, 2, 3],
-        sendName: '@cname',
-        sendMail: '@email',
+        receiveList: [],
         labelList: [
             {
                 guid: '1',
@@ -27,18 +25,24 @@ for (let i = 0; i < count; i++) {
                 name: '标签3'
             }
         ],
-        title: '@ctitle(10, 30)',
-        receiveDate: +Mock.Random.date('T'),
-        readDate: +Mock.Random.date('T')
+        title: '@ctitle(10, 40)',
+        sendDate: +Mock.Random.date('T')
     }));
+    for (let r = 0; r < 5; r++) {
+        list[i].receiveList.push(Mock.mock({
+            name: '@cname',
+            mail: '@email'
+        }))
+    }
 }
 
 export default {
     getList: config => {
-        const { status, title, page, limit, sort, order } = param2Obj(config.url);
-        let mockList = list.filter(item => {
-            if (status && item.status !== +status) return false;
+        const { title, receiveName, receiveMail, page, limit, sort, order } = param2Obj(config.url);
+        const mockList = list.filter(item => {
             if (title && item.title.indexOf(title) < 0) return false;
+            if (receiveName && item.receiveList.every(receive => receive.name.indexOf(receiveName) < 0)) return false;
+            if (receiveMail && item.receiveList.every(receive => receive.mail.indexOf(receiveMail) < 0)) return false;
             return true;
         });
         function orderFunc(a, b) {
@@ -49,12 +53,10 @@ export default {
             }
         }
         sort && mockList.sort(orderFunc);
-        if (page) {
-            mockList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1));
-        }
+        const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1));
         return {
             total: mockList.length,
-            items: mockList
+            items: pageList
         }
     }
 };

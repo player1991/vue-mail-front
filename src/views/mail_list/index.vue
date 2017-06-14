@@ -3,6 +3,9 @@
     
         <div class="filter-container">
     
+            <el-button v-if="searchType === 'deleted'" v-waves @click="unDeleted" type="primary" class="tool-item filter-item btn-add">
+                <i class="fa fa-undo"></i>
+            </el-button>
             <el-button v-waves @click="forward" type="primary" icon="share" class="tool-item filter-item btn-forward"></el-button>
             <el-button v-waves type="danger" icon="delete" class="tool-item filter-item btn-del" v-on:click="handleDelete()"></el-button>
     
@@ -21,7 +24,7 @@
             <el-button class="filter-item" type="text" icon="document" @click="handleDownload">导出</el-button>
         </div>
     
-        <el-table :data="list" ref="multipleTable" @selection-change="handleSelectionChange" v-loading.body="listLoading" border highlight-current-row style="width: 100%">
+        <el-table :data="list" ref="multipleTable" @sort-change="customSort" @selection-change="handleSelectionChange" v-loading.body="listLoading" border highlight-current-row style="width: 100%">
     
             <el-table-column type="selection" min-width="30px">
             </el-table-column>
@@ -48,16 +51,16 @@
                 </template>
             </el-table-column>
     
-            <el-table-column label="主题" :show-overflow-tooltip="true" min-width="550px">
+            <el-table-column label="主题" :show-overflow-tooltip="true" min-width="500px">
                 <template scope="scope">
                     <span class="link-type" @click="goToDetail(scope.row)">{{scope.row.title}}</span>
                     <el-tag v-for="label in scope.row.labelList" :key="label.guid">{{label.name}}</el-tag>
                 </template>
             </el-table-column>
     
-            <el-table-column align="center" label="时间" width="150px">
+            <el-table-column prop="date" sortable="custom" align="center" label="时间" width="200px">
                 <template scope="scope">
-                    <span>{{scope.row.readDate | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+                    <span>{{scope.row.date | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
                 </template>
             </el-table-column>
         </el-table>
@@ -86,9 +89,10 @@ export default {
                 limit: 20,
                 title: '',
                 type: '',
-                startDate: '',
-                stopDate: '',
+                startDate: null,
+                stopDate: null,
                 sort: '',
+                order: '',
                 routeQuery: {}
             },
             dateRange: [],
@@ -101,10 +105,6 @@ export default {
                 {
                     value: 'send',
                     showValue: '发件'
-                },
-                {
-                    value: 'draft',
-                    showValue: '草稿'
                 }
             ],
             dateOptions: {
@@ -133,37 +133,35 @@ export default {
                         picker.$emit('pick', [start, end]);
                     }
                 }]
-            }
+            },
+            searchType: null
         }
     },
     created() {
+        this.searchType = this.$route.params.labelId ? 'labelId' : 'deleted';
         this.getList();
     },
     filters: {
         typeFilter(type) {
             const typeMap = {
                 receive: 'primary',
-                send: 'success',
-                draft: 'warning'
+                send: 'success'
             };
             return typeMap[type];
         },
         typeShowFilter(type) {
             const typeShowMap = {
                 receive: '收件',
-                send: '发件',
-                draft: '草稿'
+                send: '发件'
             };
             return typeShowMap[type];
         }
     },
     methods: {
         getList() {
-            if (this.dateRange.length === 2) {
-                this.listQuery.startDate = this.dateRange[0].getTime();
-                this.listQuery.stopDate = this.dateRange[1].getTime();
-            }
-            Object.assign(this.listQuery.routeQuery, this.$route.params, this.$route.query);
+            this.listQuery.startDate = this.dateRange[0] ? this.dateRange[0].getTime() : null;
+            this.listQuery.stopDate = this.dateRange[1] ? this.dateRange[1].getTime() : null;
+            Object.assign(this.listQuery.routeQuery, this.$route.params, this.$route.meta);
             mailListAPI.fetchList(this.listQuery).then(res => {
                 this.list = res.data.items;
                 this.total = res.data.total;
@@ -183,6 +181,11 @@ export default {
         },
         handleCurrentChange(val) {
             this.listQuery.page = val;
+            this.getList();
+        },
+        customSort(sortObj) {
+            this.listQuery.sort = sortObj.prop;
+            this.listQuery.order = sortObj.order;
             this.getList();
         },
         forward() {
@@ -231,6 +234,9 @@ export default {
             }).catch(() => {
                 this.$message('操作已取消');
             });
+        },
+        unDeleted() {
+
         },
         handleDownload() {
             require.ensure([], () => {

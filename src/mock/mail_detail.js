@@ -1,4 +1,5 @@
 import Mock from 'mockjs';
+import { param2Obj } from 'utils';
 
 function mockReceiveMail(mailId) {
     return Mock.mock({
@@ -146,23 +147,23 @@ function mockSendMail(mailId) {
             }
         ],
         oldFileList: [
-            {
-                fileName: '第四届年度总选',
-                fileUrl: 'http://onh4i9vxw.bkt.clouddn.com/bq.jpg'
+             {
+                name: '第四届年度总选',
+                url: 'http://onh4i9vxw.bkt.clouddn.com/bq.jpg'
             },
             {
-                fileName: '第四届年度总选',
-                fileUrl: 'http://onh4i9vxw.bkt.clouddn.com/bq.jpg'
+                name: '第四届年度总选',
+                url: 'http://onh4i9vxw.bkt.clouddn.com/bq.jpg'
             }
         ],
         oldAudioList: [
             {
-                fileName: '忘词树',
-                fileUrl: 'http://or7rpa0sk.bkt.clouddn.com/%E4%B8%89%E6%97%A0MarBlue%20-%20%E6%98%9F%E6%98%9F%E5%92%8C%E9%9B%A8%E7%9A%84%E5%A4%9C.mp3'
+                name: '三无MarBlue - 星星和雨的夜.mp3',
+                url: 'http://or7rpa0sk.bkt.clouddn.com/%E4%B8%89%E6%97%A0MarBlue%20-%20%E6%98%9F%E6%98%9F%E5%92%8C%E9%9B%A8%E7%9A%84%E5%A4%9C.mp3'
             },
             {
-                fileName: '恩狗恩狗遇见你在下一个路口',
-                fileUrl: 'http://or7rpa0sk.bkt.clouddn.com/%E4%B8%89%E6%97%A0MarBlue%20-%20%E6%98%9F%E6%98%9F%E5%92%8C%E9%9B%A8%E7%9A%84%E5%A4%9C.mp3'
+                name: '三无MarBlue - 星星和雨的夜.mp3',
+                url: 'http://or7rpa0sk.bkt.clouddn.com/%E4%B8%89%E6%97%A0MarBlue%20-%20%E6%98%9F%E6%98%9F%E5%92%8C%E9%9B%A8%E7%9A%84%E5%A4%9C.mp3'
             }
         ],
         labelList: [
@@ -235,23 +236,23 @@ function mockDraft(mailId) {
             }
         ],
         oldFileList: [
-            {
-                fileName: '第四届年度总选',
-                fileUrl: 'http://onh4i9vxw.bkt.clouddn.com/bq.jpg'
+             {
+                name: '第四届年度总选',
+                url: 'http://onh4i9vxw.bkt.clouddn.com/bq.jpg'
             },
             {
-                fileName: '第四届年度总选',
-                fileUrl: 'http://onh4i9vxw.bkt.clouddn.com/bq.jpg'
+                name: '第四届年度总选',
+                url: 'http://onh4i9vxw.bkt.clouddn.com/bq.jpg'
             }
         ],
         oldAudioList: [
             {
-                fileName: '忘词树',
-                fileUrl: 'http://or7rpa0sk.bkt.clouddn.com/%E4%B8%89%E6%97%A0MarBlue%20-%20%E6%98%9F%E6%98%9F%E5%92%8C%E9%9B%A8%E7%9A%84%E5%A4%9C.mp3'
+                name: '三无MarBlue - 星星和雨的夜.mp3',
+                url: 'http://or7rpa0sk.bkt.clouddn.com/%E4%B8%89%E6%97%A0MarBlue%20-%20%E6%98%9F%E6%98%9F%E5%92%8C%E9%9B%A8%E7%9A%84%E5%A4%9C.mp3'
             },
             {
-                fileName: '恩狗恩狗遇见你在下一个路口',
-                fileUrl: 'http://or7rpa0sk.bkt.clouddn.com/%E4%B8%89%E6%97%A0MarBlue%20-%20%E6%98%9F%E6%98%9F%E5%92%8C%E9%9B%A8%E7%9A%84%E5%A4%9C.mp3'
+                name: '三无MarBlue - 星星和雨的夜.mp3',
+                url: 'http://or7rpa0sk.bkt.clouddn.com/%E4%B8%89%E6%97%A0MarBlue%20-%20%E6%98%9F%E6%98%9F%E5%92%8C%E9%9B%A8%E7%9A%84%E5%A4%9C.mp3'
             }
         ]
     });
@@ -259,14 +260,13 @@ function mockDraft(mailId) {
 
 export default {
     getDetail: query => {
-        const type = query.mailType || 'receive',
-            id = query.mailId || '001';
-        if (type === 'receive') {
-            return mockReceiveMail(id);
-        } else if (type === 'send') {
-            return mockSendMail(id);
+        const { mailId, mailType } = param2Obj(query.url);
+        if (mailType === 'receive') {
+            return mockReceiveMail(mailId);
+        } else if (mailType === 'send') {
+            return mockSendMail(mailId);
         } else {
-            return mockDraft();
+            return mockDraft(mailId);
         }
     }
 }

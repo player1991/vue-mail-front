@@ -4,7 +4,7 @@
             <PanThumb style="float: left" :image="avatar"> 你的权限:
                 <span class="pan-info-roles" v-for="item in roles">{{item}}</span>
             </PanThumb>
-            <a href="https://github.com/PanJiaChen/vue-element-admin" target="_blank" class="github-corner" aria-label="View source on Github">
+            <a href="https://github.com/weihomechen/vue-mail-front" target="_blank" class="github-corner" aria-label="View source on Github">
                 <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#4AB7BD; color:#fff; position: absolute; top: 50px; border: 0; right: 0;"
                 aria-hidden="true">
                 <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>

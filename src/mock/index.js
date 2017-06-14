@@ -4,6 +4,8 @@ import articleAPI from './article';
 import article_tableAPI from './article_table';
 import remoteSearchAPI from './remoteSearch';
 import inboxAPI from './inbox';
+import outboxAPI from './outbox';
+import draftboxAPI from './draftbox';
 import mailDetailAPI from './mail_detail';
 import mailLabelAPI from './mail_label';
 import mailListAPI from './mail_list';
@@ -21,6 +23,8 @@ Mock.mock(/\/article\/detail/, 'get', articleAPI.getArticle);
 
 // 邮件相关
 Mock.mock(/\/inbox\/list/, 'get', inboxAPI.getList);
+Mock.mock(/\/outbox\/list/, 'get', outboxAPI.getList);
+Mock.mock(/\/draftbox\/list/, 'get', draftboxAPI.getList);
 Mock.mock(/\/contacts\/list/, 'get', contactsAPI.getList);
 Mock.mock(/\/mail_detail/, 'get', mailDetailAPI.getDetail);
 Mock.mock(/\/mail_label\/list/, 'get', mailLabelAPI.getList);

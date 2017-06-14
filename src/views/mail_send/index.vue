@@ -85,7 +85,7 @@ import * as contactsAPI from 'api/mail_contacts';
 import * as mailSendAPI from 'api/mail_send';
 import * as mailDetailAPI from 'api/mail_detail';
 import { isEmail, isEmpty, getType } from 'utils/validate';
-import { getNowFormatDate } from 'utils';
+import { getNowFormatDate, parseTime } from 'utils';
 import { Observable } from 'rxjs/Observable';
 
 export default {
@@ -102,7 +102,8 @@ export default {
                 target: [],
                 copy: [],
                 fileList: [],
-                audioList: []
+                audioList: [],
+                date: null
             },
             target: [],
             copy: [],
@@ -138,7 +139,7 @@ export default {
         },
         getContent() {
             const pageType = this.$store.getters.pageType;
-            const mailId = this.$store.getters.mailId;
+            const mailId = this.$store.getters.mailId || this.$store.getters.draftId;
             const mailType = this.$store.getters.mailType;
             if (pageType && pageType !== 'add') {
                 mailDetailAPI.fetchDetail({ mailId, mailType }).then(res => {
@@ -148,11 +149,16 @@ export default {
                     this.mail.content = detail.content;
                     this.mail.oldFileList = detail.oldFileList;
                     this.mail.oldAudioList = detail.oldAudioList;
+                    this.mail.date = detail.receiveDate || detail.sendDate;
+                    let receiveStr = '';
                     detail.target.forEach(item => {
                         item.show = item.name + '<' + item.mail + '>';
+                        receiveStr += item.show + ';';
                     });
+                    let copyStr = '';
                     detail.copy.forEach(item => {
                         item.show = item.name + '<' + item.mail + '>';
+                        copyStr += item.show + ';';
                     });
                     const sender = {
                         name: detail.sender,
@@ -161,14 +167,22 @@ export default {
                     };
                     switch (pageType) {
                         case 'reply':
+                            this.mail.title = '回复：' + this.mail.title;
+                            this.addContentHeader(sender.show, receiveStr, copyStr);
                             this.target.push(sender);
                             break;
                         case 'replyAll':
+                            this.mail.title = '回复：' + this.mail.title;
+                            this.addContentHeader(sender.show, receiveStr, copyStr);
                             this.target = [sender].concat(detail.target, detail.copy);
                             break;
                         case 'edit':
                             this.target = detail.target;
                             this.copy = detail.copy;
+                            break;
+                        case 'forward':
+                            this.mail.title = '转发' + this.mail.title;
+                            this.addContentHeader(sender.show, receiveStr, copyStr);
                             break;
                         default:
                     }
@@ -185,6 +199,18 @@ export default {
                     this.$store.commit('SET_TARGET', null);
                 }
             }
+        },
+        addContentHeader(sender, receiveStr, copyStr) {
+            const header = `<p><span>------------------------ &nbsp; 原始邮件&nbsp;------------------------</span></p>
+                <div style="background: #e4eaef"><br>
+                <p>&nbsp;<strong>发件人:</strong>${sender}</p>
+                <p>&nbsp;<strong>时间:&nbsp;&nbsp;&nbsp;</strong>${parseTime(this.mail.date)}</p>
+                <p>&nbsp;<strong>收件人:</strong>${receiveStr}</p>
+                <p>&nbsp;<strong>抄送:&nbsp;&nbsp;&nbsp;</strong>${copyStr}</p>
+                <p>&nbsp;<strong>主题:&nbsp;&nbsp;&nbsp;</strong>${this.mail.title}</p>
+                <p><br/></p>
+                </div>`
+            this.mail.content = header + this.mail.content;
         },
         addContact(newTag) {
             if (!isEmail(newTag)) {
@@ -332,33 +358,6 @@ export default {
                     form.append(field, data[field]);
                 }
             })
-            // for (const field in data) {
-            //     // 如果该字段的值是对象且不为空
-            //     if (typeof data[field] === 'object' && !isEmpty(data[field])) {
-            //         // 数组对象
-            //         if (getType(data[field]) === 'Array') {
-            //             data[field].forEach((item, index) => {
-            //                 // 数组项如果还是对象
-            //                 if (getType(item) === 'Object') {
-            //                     // 遍历数组项的属性
-            //                     for (const itemField in item) {
-            //                         form.append(field + '[' + index + '].' + itemField, item[itemField]);
-            //                     }
-            //                 } else {
-            //                     form.append(field + '[' + index + ']', item);
-            //                 }
-            //             });
-            //         } else {
-            //             // 非数组的对象
-            //             for (const fieldKey in data[field]) {
-            //                 form.append(field + '.' + fieldKey, data[field][fieldKey])
-            //             }
-            //         }
-            //     } else {
-            //         // 最简单的情况，字段值非对象，直接append
-            //         form.append(field, data[field]);
-            //     }
-            // }
         },
         initMail() {
             for (const field in this.mail) {

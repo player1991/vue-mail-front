@@ -10,9 +10,7 @@ for (let i = 0; i < count; i++) {
         'isStar|1': true,
         'isHaveFile|1': true,
         'isHaveAudio|1': true,
-        'status|1': [0, 1, 2, 3],
-        sendName: '@cname',
-        sendMail: '@email',
+        receiveList: [],
         labelList: [
             {
                 guid: '1',
@@ -27,18 +25,27 @@ for (let i = 0; i < count; i++) {
                 name: '标签3'
             }
         ],
-        title: '@ctitle(10, 30)',
-        receiveDate: +Mock.Random.date('T'),
-        readDate: +Mock.Random.date('T')
+        title: '@ctitle(10, 40)',
+        createDate: +Mock.Random.date('T'),
+        lastModifyDate: +Mock.Random.date('T')
     }));
+    for (let r = 0; r < 5; r++) {
+        list[i].receiveList.push(Mock.mock({
+            name: '@cname',
+            mail: '@email'
+        }))
+    }
 }
 
 export default {
     getList: config => {
-        const { status, title, page, limit, sort, order } = param2Obj(config.url);
-        let mockList = list.filter(item => {
-            if (status && item.status !== +status) return false;
+        const { title, startCreateDate, stopCreateDate, startModifyDate, stopModifyDate, page, limit, sort, order } = param2Obj(config.url);
+        const mockList = list.filter(item => {
             if (title && item.title.indexOf(title) < 0) return false;
+            if (startCreateDate && item.createDate < startCreateDate) return false;
+            if (stopCreateDate && item.createDate > stopCreateDate) return false;
+            if (startModifyDate && item.lastModifyDate < startModifyDate) return false;
+            if (stopModifyDate && item.lastModifyDate > stopModifyDate) return false;
             return true;
         });
         function orderFunc(a, b) {
@@ -49,12 +56,10 @@ export default {
             }
         }
         sort && mockList.sort(orderFunc);
-        if (page) {
-            mockList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1));
-        }
+        const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1));
         return {
             total: mockList.length,
-            items: mockList
+            items: pageList
         }
     }
 };

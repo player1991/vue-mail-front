@@ -93,6 +93,10 @@ const Form1 = () =>
 // mail page
 const Inbox = () =>
     import('../views/inbox/index');
+const Outbox = () =>
+    import('../views/outbox/index');
+const DraftBox = () =>
+    import('../views/draftbox/index');
 const MailSend = () =>
     import('../views/mail_send/index');
 const MailDetail = () =>
@@ -163,6 +167,30 @@ export const constantRouterMap = [
         children: [{ path: 'index', component: Inbox, name: '收件箱' }]
     },
     {
+        path: '/outbox',
+        component: Layout,
+        redirect: '/outbox/index',
+        icon: 'xinrenzhinan',
+        noDropdown: true,
+        children: [{ path: 'index', component: Outbox, name: '发件箱' }]
+    },
+    {
+        path: '/draftbox',
+        component: Layout,
+        redirct: '/draftbox/index',
+        icon: 'xinrenzhinan',
+        noDropdown: true,
+        children: [{ path: 'index', component: DraftBox, name: '草稿箱' }]
+    },
+    {
+        path: '/mail_list',
+        component: Layout,
+        redirect: '/mail_list/index',
+        icon: 'xinrenzhinan',
+        noDropdown: true,
+        children: [{ path: 'index', component: MailList, name: '回收站', meta: { isDeleted: true } }]
+    },
+    {
         path: '/mail_detail',
         component: Layout,
         redirect: '/mail_detail/index',
@@ -205,7 +233,7 @@ export const asyncRouterMap = [
     {
         path: '',
         component: Layout,
-        redirect: 'mail_label/index',
+        redirect: 'noredirect',
         name: '邮件标签',
         icon: 'xinrenzhinan',
         children: [{ path: 'mail_label/index', component: MailLabel, name: '标签管理' }]
@@ -229,6 +257,7 @@ export const asyncRouterMap = [
         icon: 'quanxian',
         meta: { role: ['admin'] },
         noDropdown: true,
+        hidden: true,
         children: [{ path: 'index', component: Permission, name: '权限测试页', meta: { role: ['admin'] } }]
     },
     {
@@ -236,6 +265,7 @@ export const asyncRouterMap = [
         component: Layout,
         redirect: '/components/index',
         name: '组件',
+         hidden: true,
         icon: 'zujian',
         children: [
             { path: 'index', component: componentsIndex, name: '介绍 ' },
@@ -256,6 +286,7 @@ export const asyncRouterMap = [
         component: Layout,
         redirect: '/charts/index',
         name: '图表',
+        hidden: true,
         icon: 'tubiaoleixingzhengchang',
         children: [
             { path: 'index', component: chartIndex, name: '介绍' },
@@ -300,6 +331,7 @@ export const asyncRouterMap = [
         redirect: 'noredirect',
         name: 'theme',
         icon: 'theme',
+         hidden: true,
         noDropdown: true,
         children: [{ path: 'index', component: Theme, name: '换肤' }]
     },
@@ -308,6 +340,7 @@ export const asyncRouterMap = [
         component: Layout,
         redirect: 'noredirect',
         name: '综合实例',
+         hidden: true,
         icon: 'zonghe',
         children: [{
             path: '/table',
@@ -330,18 +363,13 @@ export const asyncRouterMap = [
 
 labelAPI.fetchList().then(res => {
     const labelList = res.data.labelList;
-    let labelMenuIndex;
-    asyncRouterMap.forEach((item, index) => {
-        if (item.name === '邮件标签') {
-            labelMenuIndex = index;
-        }
-    })
+    const labelMenuIndex = asyncRouterMap.findIndex(item => item.name === '邮件标签');
     labelList.forEach(item => {
         asyncRouterMap[labelMenuIndex].children.push({
             path: 'mail_list/index/' + item.id,
             component: MailList,
             name: item.name,
-            query: {
+            meta: {
                 labelId: item.id
             }
         })
@@ -350,18 +378,13 @@ labelAPI.fetchList().then(res => {
 
 groupAPI.fetchList().then(res => {
     const groupList = res.data.groupList;
-    let groupMenuIndex;
-    asyncRouterMap.forEach((item, index) => {
-        if (item.name === '通讯录') {
-            groupMenuIndex = index;
-        }
-    })
+    const groupMenuIndex = asyncRouterMap.findIndex(item => item.name === '通讯录');
     groupList.forEach(item => {
         asyncRouterMap[groupMenuIndex].children.push({
             path: 'mail_contacts/index/' + item.id,
             component: ContactList,
             name: item.name,
-            query: {
+            meta: {
                 groupId: item.id
             }
         })

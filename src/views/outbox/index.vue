@@ -3,13 +3,8 @@
     
         <div class="filter-container">
     
-            <el-button v-waves @click="reply()" type="primary" class="tool-item filter-item btn-reply">
-                <i class="fa fa-reply"></i>
-            </el-button>
-            <el-button v-waves @click="reply(true)" type="primary" class="tool-item filter-item btn-reply-all">
-                <i class="fa fa-reply-all"></i>
-            </el-button>
-            <el-button v-waves @click="forward" type="primary" icon="share" class="tool-item filter-item btn-forward"></el-button>
+            <el-button v-waves type="primary" icon="edit" @click="edit" class="tool-item filter-item btn-edit"></el-button>
+            <el-button v-waves type="primary" icon="share" @click="forward" class="tool-item filter-item btn-forward"></el-button>
             <el-button v-waves type="danger" icon="delete" class="tool-item filter-item btn-del" v-on:click="handleDelete()"></el-button>
             <el-button v-waves type="primary" class="tool-item filter-item btn-reload" v-on:click="initPage">
                 <i class="fa fa-refresh"></i>
@@ -26,11 +21,10 @@
             </el-dropdown>
             <el-input @keyup.enter.native="handleFilter" style="width: 300px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
             </el-input>
-    
-            <el-select clearable style="width: 120px" class="filter-item" v-model="listQuery.status" placeholder="状态">
-                <el-option v-for="status in statusOptions" :key="status.value" :label="status.showValue" :value="status.value">
-                </el-option>
-            </el-select>
+            <el-input @keyup.enter.native="handleFilter" style="width: 150px;" class="filter-item" placeholder="收件人" v-model="listQuery.receiveName">
+            </el-input>
+            <el-input @keyup.enter.native="handleFilter" style="width: 150px;" class="filter-item" placeholder="收件箱" v-model="listQuery.receiveMail">
+            </el-input>
     
             <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
             <el-button class="filter-item" type="text" icon="document" @click="handleDownload">导出</el-button>
@@ -49,17 +43,9 @@
                 </template>
             </el-table-column>
     
-            <el-table-column prop="status" sortable="custom" class-name="status-col" label="状态" width="80px">
+            <el-table-column align="center" label="收件人" width="120px" :show-overflow-tooltip="true">
                 <template scope="scope">
-                    <el-tag :type="scope.row.status | statusTypeFilter">{{scope.row.status | statusShowFilter}}</el-tag>
-                </template>
-            </el-table-column>
-    
-            <el-table-column prop="sendName" sortable="custom" align="center" label="发件人">
-                <template scope="scope">
-                    <el-tooltip class="item" effect="dark" :content="scope.row.sendMail" placement="top">
-                        <span>{{scope.row.sendName}}</span>
-                    </el-tooltip>
+                    <span>{{scope.row.receiveList | showReceiveName}}</span>
                 </template>
             </el-table-column>
     
@@ -70,17 +56,12 @@
                 </template>
             </el-table-column>
     
-            <el-table-column prop="receiveDate" sortable="custom" align="center" label="接收时间" width="150px">
+            <el-table-column prop="sendDate" sortable="custom" align="center" label="发送时间" width="150px">
                 <template scope="scope">
-                    <span>{{scope.row.receiveDate | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+                    <span>{{scope.row.sendDate | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
                 </template>
             </el-table-column>
     
-            <el-table-column prop="readDate" sortable="custom" align="center" label="阅读时间" width="150px">
-                <template scope="scope">
-                    <span>{{scope.row.readDate | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
-                </template>
-            </el-table-column>
         </el-table>
     
         <div v-show="!listLoading" class="pagination-container">
@@ -92,12 +73,13 @@
 </template>
 
 <script>
-import * as inboxAPI from 'api/inbox';
+import * as outboxAPI from 'api/outbox';
 import * as labelAPI from 'api/mail_label';
+import { getType } from 'utils/validate';
 import { parseTime } from 'utils';
 
 export default {
-    name: 'inbox',
+    name: 'outbox',
     data() {
         return {
             list: null,
@@ -107,28 +89,11 @@ export default {
                 page: 1,
                 limit: 20,
                 title: undefined,
-                status: undefined,
+                receciveName: undefined,
+                receciveMail: undefined,
                 sort: '',
                 order: ''
             },
-            statusOptions: [
-                {
-                    value: 0,
-                    showValue: '未读'
-                },
-                {
-                    value: 1,
-                    showValue: '已读'
-                },
-                {
-                    value: 2,
-                    showValue: '已回复'
-                },
-                {
-                    value: 3,
-                    showValue: '已转发'
-                }
-            ],
             multipleSelection: [],
             tableKey: 0,
             labelList: []
@@ -138,23 +103,10 @@ export default {
         this.initPage();
     },
     filters: {
-        statusTypeFilter(status) {
-            const statusMap = {
-                0: 'danger',
-                1: 'primary',
-                2: 'success',
-                3: 'gray'
-            };
-            return statusMap[status]
-        },
-        statusShowFilter(status) {
-            const statusMap = {
-                0: '未读',
-                1: '已读',
-                2: '已回复',
-                3: '已转发'
-            };
-            return statusMap[status]
+        showReceiveName(receiveList) {
+            let nameStr = '';
+            receiveList.forEach(item => nameStr += item.name + ';');
+            return nameStr;
         }
     },
     methods: {
@@ -164,7 +116,7 @@ export default {
         },
         getList() {
             this.listLoading = true;
-            inboxAPI.fetchList(this.listQuery).then(response => {
+            outboxAPI.fetchList(this.listQuery).then(response => {
                 this.list = response.data.items;
                 this.total = response.data.total;
                 this.listLoading = false;
@@ -202,22 +154,18 @@ export default {
         },
         goToDetail(id) {
             this.$store.commit('SET_MAIL_ID', id);
-            this.$store.commit('SET_MAIL_TYPE', 'receive');
+            this.$store.commit('SET_MAIL_TYPE', 'send');
             this.$router.push({ path: '/mail_detail/index' });
         },
-        reply(isALL) {
+        edit() {
             const selectedLen = this.multipleSelection.length || 0;
             if (selectedLen !== 1) {
-                this.$message('请选择一封邮件进行回复');
+                this.$message('请选择一封邮件进行编辑');
                 return;
             }
             this.$store.commit('SET_MAIL_ID', this.multipleSelection[0].id);
-            if (isALL) {
-                this.$store.commit('SET_PAGE_TYPE', 'replyAll');
-            } else {
-                this.$store.commit('SET_PAGE_TYPE', 'reply');
-            }
-            this.$store.commit('SET_MAIL_TYPE', 'receive');
+            this.$store.commit('SET_PAGE_TYPE', 'edit');
+            this.$store.commit('SET_MAIL_TYPE', 'send');
             this.$router.push({ path: '/mail_send/index' });
         },
         forward() {
@@ -228,7 +176,7 @@ export default {
             }
             this.$store.commit('SET_MAIL_ID', this.multipleSelection[0].id);
             this.$store.commit('SET_PAGE_TYPE', 'forward');
-            this.$store.commit('SET_MAIL_TYPE', 'receive');
+            this.$store.commit('SET_MAIL_TYPE', 'send');
             this.$router.push({ path: '/mail_send/index' });
         },
         handleSelectionChange(val) {
@@ -247,7 +195,7 @@ export default {
             }).then(() => {
                 const idArr = [];
                 this.multipleSelection.forEach(item => idArr.push(item.id));
-                inboxAPI.delReceiveMail(idArr).subscribe({
+                outboxAPI.delSendMail(idArr).subscribe({
                     next: () => {
                         this.$message({
                             message: '删除成功',
@@ -269,16 +217,20 @@ export default {
         handleDownload() {
             require.ensure([], () => {
                 const { export_json_to_excel } = require('vendor/Export2Excel');
-                const tHeader = ['发件人', '发件邮箱', '主题', '接收时间', '阅读时间'];
-                const filterVal = ['sendName', 'sendMail', 'title', 'receiveDate', 'readDate'];
+                const tHeader = ['收件人', '主题', '发送时间'];
+                const filterVal = ['receiveList', 'title', 'sendDate'];
                 const data = this.formatJson(filterVal, this.list);
-                export_json_to_excel(tHeader, data, parseTime(Date.now()) + '收件箱数据');
+                export_json_to_excel(tHeader, data, parseTime(Date.now()) + '发件箱数据');
             })
         },
         formatJson(filterVal, jsonData) {
             return jsonData.map(v => filterVal.map(j => {
                 if (~j.indexOf('Date')) {
                     return parseTime(v[j])
+                } else if (getType(v[j]) === 'Array') {
+                    let str = '';
+                    v[j].forEach(item => str += item.name + '<' + item.mail + '>;');
+                    return str;
                 } else {
                     return v[j]
                 }
