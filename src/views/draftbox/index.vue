@@ -297,8 +297,6 @@ export default {
 </script>
 
 <style>
-.file {
-    color: #11999E
-}
+
 </style>
 

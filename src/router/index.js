@@ -115,7 +115,7 @@ export const constantRouterMap = [
         path: '/draftbox',
         component: Layout,
         redirct: '/draftbox/index',
-        icon: 'draft',
+        icon: 'edit3',
         noDropdown: true,
         children: [{ path: 'index', component: DraftBox, name: '草稿箱' }]
     },
@@ -191,7 +191,7 @@ export const asyncRouterMap = [
         component: Layout,
         redirect: 'noredirect',
         name: '错误页面',
-        icon: 'error',
+        icon: 'warn1',
         children: [
             { path: '401', component: Err401, name: '401' },
             { path: '404', component: Err404, name: '404' }

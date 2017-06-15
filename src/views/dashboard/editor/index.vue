@@ -93,10 +93,10 @@ export default {
                     { receiveCount: 68, sendCount: 26, week: '201704' },
                     { receiveCount: 52, sendCount: 21, week: '201705' },
                     { receiveCount: 64, sendCount: 23, week: '201706' },
-                    { receiveCount: 78, sendCount: 30, week: '201707' },
-                    { receiveCount: 71, sendCount: 26, week: '201708' },
-                    { receiveCount: 63, sendCount: 23, week: '201709' },
-                    { receiveCount: 57, sendCount: 27, week: '2017010' },
+                    { receiveCount: 69, sendCount: 20, week: '201707' },
+                    { receiveCount: 61, sendCount: 26, week: '201708' },
+                    { receiveCount: 78, sendCount: 32, week: '201709' },
+                    { receiveCount: 73, sendCount: 22, week: '2017010' },
                     { receiveCount: 60, sendCount: 20, week: '2017011' },
                     { receiveCount: 73, sendCount: 24, week: '2017012' }
                 ],
@@ -159,7 +159,7 @@ export default {
             'roles'
         ]),
         unreadMails() {
-            return this.unreadList.slice()
+            return this.unreadList.slice(0,6)
         }
     },
     methods: {
@@ -250,8 +250,7 @@ export default {
         padding: 12px 12px 0px;
         float: left;
         width: 60%;
-        height: 500px;
-        overflow: scroll;
+        height: 380px;
         position: relative;
         .unread-mail- {
             &title {

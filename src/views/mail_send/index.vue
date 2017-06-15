@@ -3,7 +3,7 @@
         <el-row :gutter="10">
             <el-col :span="2">
                 <el-tag class="target-label" color="#36c6d3">
-                    <icon-svg icon-class="add-user1" />收件人
+                    收件人<icon-svg icon-class="add-user4" class="add-user"/>
                 </el-tag>
             </el-col>
             <el-col :span="20">
@@ -16,7 +16,7 @@
         <el-row :gutter="10">
             <el-col :span="2">
                 <el-tag class="target-label" color="#36c6d3">
-                    <icon-svg icon-class="add-user1" />抄送
+                    抄送<icon-svg icon-class="add-user4" class="add-user"/>
                 </el-tag>
             </el-col>
             <el-col :span="20">

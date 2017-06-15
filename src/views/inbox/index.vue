@@ -41,7 +41,7 @@
             <el-table-column type="selection" min-width="30px">
             </el-table-column>
     
-            <el-table-column align="left" width="80px" label="信息">
+            <el-table-column align="left" width="90px" label="信息">
                 <template scope="scope">
                     <icon-svg @click.native="toggleStar(scope.row)" :icon-class="scope.row.isStar? 'favourite':'favourite-o'" class="star"/>
                     <icon-svg v-if="scope.row.isHaveFile" icon-class="label4" class="file" />
