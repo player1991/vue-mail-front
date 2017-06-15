@@ -5,12 +5,12 @@
                  class="card-box login-form">
             <h3 class="title">系统登录</h3>
             <el-form-item prop="email">
-                <span class="svg-container"><wscn-icon-svg icon-class="jiedianyoujian"/></span>
+                <span class="svg-container"><icon-svg icon-class="mail"/></span>
                 <el-input name="email" type="text" v-model="loginForm.email" autoComplete="on"
                           placeholder="邮箱"></el-input>
             </el-form-item>
             <el-form-item prop="password">
-                <span class="svg-container"><wscn-icon-svg icon-class="mima"/></span>
+                <span class="svg-container"><icon-svg icon-class="lock"/></span>
                 <el-input name="password" type="password" @keyup.enter.native="handleLogin" v-model="loginForm.password"
                           autoComplete="on" placeholder="密码"></el-input>
             </el-form-item>
@@ -19,11 +19,10 @@
                     登录
                 </el-button>
             </el-form-item>
-            <div class='tips'>admin账号为:admin@wallstreetcn.com 密码随便填</div>
-            <div class='tips'>editor账号:editor@wallstreetcn.com 密码随便填</div>
             <router-link to="/sendpwd" class="forget-pwd">
                 忘记密码?(或首次登录)
             </router-link>
+            <div class='tips'>admin账号为:admin@mail.com 密码随便填</div>
         </el-form>
         <el-dialog title="第三方验证" :visible.sync="showDialog">
             邮箱登录成功,请选择第三方验证
@@ -34,7 +33,7 @@
 
 <script>
     import { mapGetters } from 'vuex';
-    import { isWscnEmail } from 'utils/validate';
+    import { isEmail } from 'utils/validate';
     // import { getQueryObject } from 'utils';
     import socialSign from './socialsignin';
 
@@ -43,7 +42,7 @@
       name: 'login',
       data() {
         const validateEmail = (rule, value, callback) => {
-          if (!isWscnEmail(value)) {
+          if (!isEmail(value)) {
             callback(new Error('请输入正确的合法邮箱'));
           } else {
             callback();
@@ -58,7 +57,7 @@
         };
         return {
           loginForm: {
-            email: 'admin@wallstreetcn.com',
+            email: 'admin@mail.com',
             password: ''
           },
           loginRules: {

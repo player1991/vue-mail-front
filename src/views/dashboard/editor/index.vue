@@ -14,20 +14,20 @@
             <div class="info-container">
                 <span class="display_name">{{name}}</span>
                 <div class="info-wrapper">
-                    <div class="info-item" :to="'/article/wscnlist?uid='+uid">
+                    <div class="info-item">
                         <countTo class="info-item-num" :startVal='0' :endVal='statisticsData.inbox_count' :duration='3400'></countTo>
                         <span class="info-item-text">收件</span>
-                        <wscn-icon-svg icon-class="a" class="dashboard-icon" />
+                        <icon-svg icon-class="a" class="dashboard-icon" />
                     </div>
                     <div class="info-item" style="cursor: auto">
                         <countTo class="info-item-num" :startVal='0' :endVal='statisticsData.outbox_count' :duration='3600'></countTo>
                         <span class="info-item-text">发件</span>
-                        <wscn-icon-svg icon-class="b" class="dashboard-icon" />
+                        <icon-svg icon-class="b" class="dashboard-icon" />
                     </div>
-                    <div class="info-item" :to="'/comment/commentslist?res_author_id='+uid">
+                    <div class="info-item">
                         <countTo class="info-item-num" ref='countTo3' :startVal='0' :endVal='statisticsData.draft_count' :duration='3800'></countTo>
                         <span class="info-item-text">草稿</span>
-                        <wscn-icon-svg icon-class="c" class="dashboard-icon" />
+                        <icon-svg icon-class="c" class="dashboard-icon" />
                     </div>
                 </div>
             </div>
@@ -44,19 +44,18 @@
     
         <div class="clearfix main-dashboard-container">
             <div class="chart-container">
-                <MonthKpi style="border-bottom: 1px solid #DEE1E2;" :articlesComplete='statisticsData.month_inbox_count'></MonthKpi>
-                <ArticlesChart :listData='statisticsData.week_article'></ArticlesChart>
+                <WeeklyUsing :listData='statisticsData.weekly_using'></WeeklyUsing>
             </div>
             <div class="unread-mail-container">
                 <div class="unread-mail-title">未读邮件</div>
                 <div class="unread-mail-wrapper">
-                    <template v-if="recentArticles.length!=0">
-                        <div class="unread-mail-item" v-for="item in  recentArticles">
-                            <span class="unread-mail-content" :to="'/mail_detail/index/'+item.id">
-                                {{item.title}}
+                    <template v-if="unreadMails.length!=0">
+                        <div class="unread-mail-item" v-for="mail in unreadMails">
+                            <span class="unread-mail-content" @click="toUnreadMail(mail.id)">
+                                {{mail.title}}
                             </span>
-                            <el-tag type="danger">{{item.receiveDate | parseTime('{m}-{d} {h}:{i}')}}</el-tag>
-                            <el-tag type="primary">{{item.sendName}}</el-tag>
+                            <el-tag type="danger">{{mail.receiveDate | parseTime('{m}-{d} {h}:{i}')}}</el-tag>
+                            <el-tag type="primary">{{mail.sendName}}</el-tag>
                         </div>
                     </template>
                     <template v-else>
@@ -71,14 +70,13 @@
 <script>
 import { mapGetters } from 'vuex';
 import PanThumb from 'components/PanThumb';
-import MonthKpi from './monthKpi';
-import ArticlesChart from './articlesChart';
+import WeeklyUsing from './weekly_using';
 import { fetchUnReadList } from 'api/inbox';
 import countTo from 'vue-count-to';
 import { parseTime } from 'utils/index';
 export default {
     name: 'dashboard',
-    components: { PanThumb, MonthKpi, ArticlesChart, countTo },
+    components: { PanThumb, WeeklyUsing, countTo },
     data() {
         return {
             chart: null,
@@ -88,22 +86,64 @@ export default {
                 draft_count: 128,
                 month_inbox_count: 28,
                 unread_mail: [],
-                week_article: [
-                    { count: 30, week: '201716' },
-                    { count: 26, week: '201715' },
-                    { count: 31, week: '201714' },
-                    { count: 28, week: '201713' },
-                    { count: 40, week: '201712' },
-                    { count: 41, week: '201711' },
-                    { count: 50, week: '201710' },
-                    { count: 42, week: '201709' },
-                    { count: 36, week: '201708' },
-                    { count: 32, week: '201707' },
-                    { count: 40, week: '201706' },
-                    { count: 41, week: '201705' }
+                weekly_using: [
+                    { receiveCount: 40, sendCount: 21, week: '201701' },
+                    { receiveCount: 48, sendCount: 19, week: '201702' },
+                    { receiveCount: 55, sendCount: 23, week: '201703' },
+                    { receiveCount: 68, sendCount: 26, week: '201704' },
+                    { receiveCount: 52, sendCount: 21, week: '201705' },
+                    { receiveCount: 64, sendCount: 23, week: '201706' },
+                    { receiveCount: 78, sendCount: 30, week: '201707' },
+                    { receiveCount: 71, sendCount: 26, week: '201708' },
+                    { receiveCount: 63, sendCount: 23, week: '201709' },
+                    { receiveCount: 57, sendCount: 27, week: '2017010' },
+                    { receiveCount: 60, sendCount: 20, week: '2017011' },
+                    { receiveCount: 73, sendCount: 24, week: '2017012' }
+                ],
+                frequertContacts: [
+                    {
+                        name: '撸力',
+                        mail: 'ruli@snh48.com',
+                        avatarUrl: 'http://or7rpa0sk.bkt.clouddn.com/avatar.jpg'
+                    },
+                    {
+                        name: '小鞠',
+                        mail: 'xiaoju@snh48.com',
+                        avatarUrl: 'http://or7rpa0sk.bkt.clouddn.com/avatar.jpg'
+                    },
+                    {
+                        name: '啊黄',
+                        mail: 'ahuang@snh48.com',
+                        avatarUrl: 'http://or7rpa0sk.bkt.clouddn.com/avatar.jpg'
+                    },
+                    {
+                        name: '二狗',
+                        mail: 'ergou@snh48.com',
+                        avatarUrl: 'http://or7rpa0sk.bkt.clouddn.com/avatar.jpg'
+                    },
+                    {
+                        name: '大哥',
+                        mail: 'dage@snh48.com',
+                        avatarUrl: 'http://or7rpa0sk.bkt.clouddn.com/avatar.jpg'
+                    },
+                    {
+                        name: '小四',
+                        mail: 'xiaosi@snh48.com',
+                        avatarUrl: 'http://or7rpa0sk.bkt.clouddn.com/avatar.jpg'
+                    },
+                    {
+                        name: '十七',
+                        mail: 'shiqi@snh48.com',
+                        avatarUrl: 'http://or7rpa0sk.bkt.clouddn.com/avatar.jpg'
+                    },
+                    {
+                        name: '爱总',
+                        mail: 'aizong@snh48.com',
+                        avatarUrl: 'http://or7rpa0sk.bkt.clouddn.com/avatar.jpg'
+                    }
                 ]
             },
-            list: []
+            unreadList: []
         }
     },
     created() {
@@ -118,15 +158,19 @@ export default {
             'introduction',
             'roles'
         ]),
-        recentArticles() {
-            return this.list.slice()
+        unreadMails() {
+            return this.unreadList.slice()
         }
     },
     methods: {
         fetchData() {
             fetchUnReadList().then(res => {
-                this.list = res.data.items;
+                this.unreadList = res.data.items;
             })
+        },
+        toUnreadMail(id) {
+            this.$store.commit('SET_MAIL_TYPE', 'receive');
+            this.$router.push({ path: '/mail_detail/index/' + id });
         }
     }
 }
@@ -165,7 +209,6 @@ export default {
             position: absolute;
             bottom: 0px;
             .info-item {
-                cursor: pointer;
                 display: inline-block;
                 margin-right: 95px;
                 .info-item-num {
@@ -187,7 +230,6 @@ export default {
             height: 22px;
         }
     }
-
     .btn-group {
         margin: 30px 36px 30px 0;
     }

@@ -2,8 +2,8 @@
     <div v-loading.body="loading" class="app-container calendar-list-container">
         <el-row :gutter="10">
             <el-col :span="2">
-                <el-tag class="target-label" color="#36c6d3">收件人
-                    <i class="fa fa-user-plus"></i>
+                <el-tag class="target-label" color="#36c6d3">
+                    <icon-svg icon-class="add-user1" />收件人
                 </el-tag>
             </el-col>
             <el-col :span="20">
@@ -15,8 +15,8 @@
         </el-row>
         <el-row :gutter="10">
             <el-col :span="2">
-                <el-tag class="target-label" color="#36c6d3">抄送
-                    <i class="fa fa-user-plus"></i>
+                <el-tag class="target-label" color="#36c6d3">
+                    <icon-svg icon-class="add-user1" />抄送
                 </el-tag>
             </el-col>
             <el-col :span="20">
@@ -52,14 +52,14 @@
                     <li v-for="(audio, index) in mail.oldAudioList">
                         <audio :src="audio.url" controls></audio>
                         <a class="old-audio-name" :href="audio.url" download>{{audio.name}}</a>
-                        <i class="fa fa-trash-o del-audio" @click="delOldAudio(index)"></i>
+                        <icon-svg icon-class="delete11" class="del-audio" @click.native="delOldAudio(index)" />
                     </li>
                 </ul>
                 <ul class="audio-list">
                     <li v-for="(audio, index) in mail.audioList">
                         <audio :src="audio.url" controls></audio>
                         <el-input class="audio-name" v-model="audio.name" size="small"></el-input>
-                        <i class="fa fa-trash-o del-audio" @click="delAudio(index)"></i>
+                        <icon-svg icon-class="delete11" class="del-audio" @click.native="delAudio(index)" />
                     </li>
                 </ul>
             </el-col>
@@ -71,8 +71,8 @@
     
         <el-row>
             <el-col :span="12" :offset="9">
-                <el-button type="primary" @click="sendSubmit" class="send-btn">发送</el-button>
-                <el-button type="primary" @click="cancelSend" class="cancel-btn">取消</el-button>
+                <el-button type="primary" @click="sendSubmit">发送</el-button>
+                <el-button type="primary" @click="saveAsDraft">保存</el-button>
             </el-col>
         </el-row>
     
@@ -102,16 +102,17 @@ export default {
                 target: [],
                 copy: [],
                 fileList: [],
-                audioList: [],
-                date: null
+                audioList: []
             },
+            date: '',
             target: [],
             copy: [],
             isRecording: false,
             recorder: null,
             contacts: [],
             editorId: 'mail_send_ediotr',
-            editorHeight: null
+            editorHeight: null,
+            timing: ''
         }
     },
     created() {
@@ -149,7 +150,7 @@ export default {
                     this.mail.content = detail.content;
                     this.mail.oldFileList = detail.oldFileList;
                     this.mail.oldAudioList = detail.oldAudioList;
-                    this.mail.date = detail.receiveDate || detail.sendDate;
+                    this.date = detail.receiveDate || detail.sendDate;
                     let receiveStr = '';
                     detail.target.forEach(item => {
                         item.show = item.name + '<' + item.mail + '>';
@@ -204,7 +205,7 @@ export default {
             const header = `<p><span>------------------------ &nbsp; 原始邮件&nbsp;------------------------</span></p>
                 <div style="background: #e4eaef"><br>
                 <p>&nbsp;<strong>发件人:</strong>${sender}</p>
-                <p>&nbsp;<strong>时间:&nbsp;&nbsp;&nbsp;</strong>${parseTime(this.mail.date)}</p>
+                <p>&nbsp;<strong>时间:&nbsp;&nbsp;&nbsp;</strong>${parseTime(this.date)}</p>
                 <p>&nbsp;<strong>收件人:</strong>${receiveStr}</p>
                 <p>&nbsp;<strong>抄送:&nbsp;&nbsp;&nbsp;</strong>${copyStr}</p>
                 <p>&nbsp;<strong>主题:&nbsp;&nbsp;&nbsp;</strong>${this.mail.title}</p>
@@ -321,12 +322,24 @@ export default {
                 }
             })
         },
-        cancelSend() {
-            this.$confirm('是否离开页面？', '确认', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then().catch();
+        saveAsDraft() {
+            // 添加到formData前应该根据需求处理数据
+            this.target.forEach(item => {
+                this.mail.target.push(item.mail);
+            });
+            this.copy.forEach(item => {
+                this.mail.copy.push(item.mail);
+            });
+            const mailForm = new FormData()
+            this.appendToFormData(mailForm, this.mail);
+            const mailDTO = mailForm;
+            this.loading = true;
+            mailSendAPI.saveAsDraft(mailDTO).subscribe({
+                next: () => {
+                    this.loading = false;
+                    this.$message('保存成功')
+                }
+            }).catch()
         },
         // 添加到formData，需要符合formData的格式
         appendToFormData(form, data) {
@@ -335,6 +348,7 @@ export default {
                 // 如果该字段的值是对象
                 if (typeof data[field] === 'object') {
                     if (!isEmpty(data[field])) { // 且不为空
+                        debugger
                         if (getType(data[field]) === 'Array') { // 数组对象
                             data[field].forEach((item, index) => {
                                 if (getType(item) === 'Object') {  // 数组项如果还是对象
@@ -348,6 +362,7 @@ export default {
                             });
                         } else {
                             // 非数组的对象
+                            debugger
                             Object.keys(data[field]).forEach(fieldKey => {
                                 form.append(field + '.' + fieldKey, data[field][fieldKey])
                             })
@@ -388,6 +403,11 @@ ul {
 
 audio {
     width: 260px;
+}
+
+.tool-bar {
+    margin-top: -20px;
+    margin-left: -20px;
 }
 
 .el-row {

@@ -4,11 +4,13 @@
         <div class="filter-container">
     
             <el-button v-if="searchType === 'deleted'" v-waves @click="unDeleted" type="primary" class="tool-item filter-item btn-add">
-                <i class="fa fa-undo"></i>
+                <icon-svg icon-class="undo"/>
             </el-button>
             <el-button v-waves @click="forward" type="primary" icon="share" class="tool-item filter-item btn-forward"></el-button>
             <el-button v-waves type="danger" icon="delete" class="tool-item filter-item btn-del" v-on:click="handleDelete()"></el-button>
-    
+            <el-button v-waves type="primary" class="tool-item filter-item btn-reload" v-on:click="getList">
+                <icon-svg icon-class="reload4"/>
+            </el-button>
             <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
             </el-input>
     
@@ -31,9 +33,9 @@
     
             <el-table-column align="left" width="80px" label="信息">
                 <template scope="scope">
-                    <i class="star fa" v-bind:class="[scope.row.isStar? 'fa-star':'fa-star-o']"></i>
-                    <i v-if="scope.row.isHaveFile" class="fa fa-paperclip"></i>
-                    <i v-if="scope.row.isHaveAudio" class="fa fa-microphone"></i>
+                    <icon-svg @click.native="toggleStar(scope.row)" :icon-class="scope.row.isStar? 'favourite':'favourite-o'" class="star" />
+                    <icon-svg v-if="scope.row.isHaveFile" icon-class="label4" class="file" />
+                    <icon-svg v-if="scope.row.isHaveAudio" icon-class="voice4"/>
                 </template>
             </el-table-column>
     

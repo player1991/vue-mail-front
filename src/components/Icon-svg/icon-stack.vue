@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'wscn-icon-stack',
+    name: 'icon-stack',
     props: {
       width: {
         type: Number,

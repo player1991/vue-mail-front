@@ -20,7 +20,6 @@ import Sticky from 'components/Sticky'; // 粘性header组件
 import vueWaves from './directive/waves';// 水波纹指令
 import errLog from 'store/errLog';// error log组件
 import './mock/index.js';  // 该项目所有请求使用mockjs模拟
-import 'assets/font-awesome-4.7.0/css/font-awesome.min.css';
 
 // register globally
 Vue.component('multiselect', Multiselect);

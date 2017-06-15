@@ -14,3 +14,9 @@ export function sendMail(mailDTO) {
         setTimeout(() => observer.next(), 2000);
     })
 }
+
+export function saveAsDraft(mailDTO) {
+    return Observable.create(observer => {
+        setTimeout(() => observer.next(), 1000);
+    })
+}

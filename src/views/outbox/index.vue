@@ -7,23 +7,23 @@
             <el-button v-waves type="primary" icon="share" @click="forward" class="tool-item filter-item btn-forward"></el-button>
             <el-button v-waves type="danger" icon="delete" class="tool-item filter-item btn-del" v-on:click="handleDelete()"></el-button>
             <el-button v-waves type="primary" class="tool-item filter-item btn-reload" v-on:click="initPage">
-                <i class="fa fa-refresh"></i>
+                <icon-svg icon-class="reload4"/>
             </el-button>
     
             <el-dropdown @command="handleMark" split-button type="primary" menu-align="start" class="tool-item filter-item">
                 标记为
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="star">
-                        <i class="fa fa-star download-icon"></i>星标邮件</el-dropdown-item>
+                         <icon-svg icon-class="favourite" class="download-icon" />星标邮件</el-dropdown-item>
                     <el-dropdown-item v-for="label in labelList" :key="label.id" :command="label.id + ''">
-                        <i class="fa fa-bookmark download-icon"></i>{{label.name}}</el-dropdown-item>
+                         <icon-svg icon-class="label1" class="download-icon" />{{label.name}}</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
             <el-input @keyup.enter.native="handleFilter" style="width: 300px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
             </el-input>
             <el-input @keyup.enter.native="handleFilter" style="width: 150px;" class="filter-item" placeholder="收件人" v-model="listQuery.receiveName">
             </el-input>
-            <el-input @keyup.enter.native="handleFilter" style="width: 150px;" class="filter-item" placeholder="收件箱" v-model="listQuery.receiveMail">
+            <el-input @keyup.enter.native="handleFilter" style="width: 150px;" class="filter-item" placeholder="收件邮箱" v-model="listQuery.receiveMail">
             </el-input>
     
             <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">搜索</el-button>
@@ -37,9 +37,9 @@
     
             <el-table-column align="left" width="80px" label="信息">
                 <template scope="scope">
-                    <i @click="toggleStar(scope.row)" class="star fa" v-bind:class="[scope.row.isStar? 'fa-star':'fa-star-o']"></i>
-                    <i v-if="scope.row.isHaveFile" class="fa fa-paperclip"></i>
-                    <i v-if="scope.row.isHaveAudio" class="fa fa-microphone"></i>
+                    <icon-svg @click.native="toggleStar(scope.row)" :icon-class="scope.row.isStar? 'favourite':'favourite-o'" class="star" />
+                    <icon-svg v-if="scope.row.isHaveFile" icon-class="label4" class="file" />
+                    <icon-svg v-if="scope.row.isHaveAudio" icon-class="voice4"/>
                 </template>
             </el-table-column>
     

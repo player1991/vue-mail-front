@@ -21,43 +21,6 @@ const dashboard = () =>
 const Introduction = () =>
     import('../views/introduction/index');
 
-/* components */
-const componentsIndex = () =>
-    import('../views/components/index');
-const Tinymce = () =>
-    import('../views/components/tinymce');
-const Markdown = () =>
-    import('../views/components/markdown');
-const JsonEditor = () =>
-    import('../views/components/jsoneditor');
-const DndList = () =>
-    import('../views/components/dndlist');
-const AvatarUpload = () =>
-    import('../views/components/avatarUpload');
-const Dropzone = () =>
-    import('../views/components/dropzone');
-const Sticky = () =>
-    import('../views/components/sticky');
-const SplitPane = () =>
-    import('../views/components/splitpane');
-const CountTo = () =>
-    import('../views/components/countTo');
-const Mixin = () =>
-    import('../views/components/mixin');
-
-
-/* charts */
-const chartIndex = () =>
-    import('../views/charts/index');
-const KeyboardChart = () =>
-    import('../views/charts/keyboard');
-const KeyboardChart2 = () =>
-    import('../views/charts/keyboard2');
-const LineMarker = () =>
-    import('../views/charts/line');
-const MixChart = () =>
-    import('../views/charts/mixchart');
-
 /* error page */
 const Err404 = () =>
     import('../views/error/404');
@@ -67,28 +30,6 @@ const Err401 = () =>
 /* error log */
 const ErrorLog = () =>
     import('../views/errlog/index');
-
-/* excel */
-const ExcelDownload = () =>
-    import('../views/excel/index');
-
-/* theme  */
-const Theme = () =>
-    import('../views/theme/index');
-
-/* example*/
-const TableLayout = () =>
-    import('../views/example/table/index');
-const DynamicTable = () =>
-    import('../views/example/table/dynamictable');
-const Table = () =>
-    import('../views/example/table/table');
-const DragTable = () =>
-    import('../views/example/table/dragTable');
-const InlineEditTable = () =>
-    import('../views/example/table/inlineEditTable');
-const Form1 = () =>
-    import('../views/example/form1');
 
 // mail page
 const Inbox = () =>
@@ -111,10 +52,6 @@ const ContactList = () =>
     import('../views/mail_contacts/index');
 import * as labelAPI from 'api/mail_label';
 import * as groupAPI from 'api/mail_group';
-
-/* permission */
-const Permission = () =>
-    import('../views/permission/index');
 
 Vue.use(Router);
 
@@ -146,7 +83,7 @@ export const constantRouterMap = [
         path: '/introduction',
         component: Layout,
         redirect: '/introduction/index',
-        icon: 'xinrenzhinan',
+        icon: 'question2',
         noDropdown: true,
         children: [{ path: 'index', component: Introduction, name: '简述' }]
     },
@@ -154,7 +91,7 @@ export const constantRouterMap = [
         path: '/mail_send',
         component: Layout,
         redirect: '/mail_send/index',
-        icon: 'xinrenzhinan',
+        icon: 'edit2',
         noDropdown: true,
         children: [{ path: 'index', component: MailSend, name: '写信' }]
     },
@@ -162,7 +99,7 @@ export const constantRouterMap = [
         path: '/inbox',
         component: Layout,
         redirect: '/inbox/index',
-        icon: 'xinrenzhinan',
+        icon: 'inbox',
         noDropdown: true,
         children: [{ path: 'index', component: Inbox, name: '收件箱' }]
     },
@@ -170,7 +107,7 @@ export const constantRouterMap = [
         path: '/outbox',
         component: Layout,
         redirect: '/outbox/index',
-        icon: 'xinrenzhinan',
+        icon: 'outbox',
         noDropdown: true,
         children: [{ path: 'index', component: Outbox, name: '发件箱' }]
     },
@@ -178,7 +115,7 @@ export const constantRouterMap = [
         path: '/draftbox',
         component: Layout,
         redirct: '/draftbox/index',
-        icon: 'xinrenzhinan',
+        icon: 'draft',
         noDropdown: true,
         children: [{ path: 'index', component: DraftBox, name: '草稿箱' }]
     },
@@ -186,7 +123,7 @@ export const constantRouterMap = [
         path: '/mail_list',
         component: Layout,
         redirect: '/mail_list/index',
-        icon: 'xinrenzhinan',
+        icon: 'recycle3',
         noDropdown: true,
         children: [{ path: 'index', component: MailList, name: '回收站', meta: { isDeleted: true } }]
     },
@@ -195,7 +132,7 @@ export const constantRouterMap = [
         component: Layout,
         redirect: '/mail_detail/index',
         hidden: true,
-        children: [{ path: 'index', component: MailDetail, name: '邮件详情' }]
+        children: [{ path: 'index/:mailId?', component: MailDetail, name: '邮件详情' }]
     },
     {
         path: '/mail_list',
@@ -235,7 +172,7 @@ export const asyncRouterMap = [
         component: Layout,
         redirect: 'noredirect',
         name: '邮件标签',
-        icon: 'xinrenzhinan',
+        icon: 'label7',
         children: [{ path: 'mail_label/index', component: MailLabel, name: '标签管理' }]
     },
     {
@@ -243,57 +180,10 @@ export const asyncRouterMap = [
         component: Layout,
         redirect: 'noredirect',
         name: '通讯录',
-        icon: 'xinrenzhinan',
+        icon: 'contact5',
         children: [
             { path: 'mail_contacts/group', component: MailGroup, name: '分组管理' },
             { path: 'mail_contacts/index', component: ContactList, name: '所有联系人' }
-        ]
-    },
-    {
-        path: '/permission',
-        component: Layout,
-        redirect: '/permission/index',
-        name: '权限测试',
-        icon: 'quanxian',
-        meta: { role: ['admin'] },
-        noDropdown: true,
-        hidden: true,
-        children: [{ path: 'index', component: Permission, name: '权限测试页', meta: { role: ['admin'] } }]
-    },
-    {
-        path: '/components',
-        component: Layout,
-        redirect: '/components/index',
-        name: '组件',
-         hidden: true,
-        icon: 'zujian',
-        children: [
-            { path: 'index', component: componentsIndex, name: '介绍 ' },
-            { path: 'tinymce', component: Tinymce, name: '富文本编辑器' },
-            { path: 'markdown', component: Markdown, name: 'Markdown' },
-            { path: 'jsoneditor', component: JsonEditor, name: 'JSON编辑器' },
-            { path: 'dndlist', component: DndList, name: '列表拖拽' },
-            { path: 'splitpane', component: SplitPane, name: 'SplitPane' },
-            { path: 'avatarupload', component: AvatarUpload, name: '头像上传' },
-            { path: 'dropzone', component: Dropzone, name: 'Dropzone' },
-            { path: 'sticky', component: Sticky, name: 'Sticky' },
-            { path: 'countto', component: CountTo, name: 'CountTo' },
-            { path: 'mixin', component: Mixin, name: '小组件' }
-        ]
-    },
-    {
-        path: '/charts',
-        component: Layout,
-        redirect: '/charts/index',
-        name: '图表',
-        hidden: true,
-        icon: 'tubiaoleixingzhengchang',
-        children: [
-            { path: 'index', component: chartIndex, name: '介绍' },
-            { path: 'keyboard', component: KeyboardChart, name: '键盘图表' },
-            { path: 'keyboard2', component: KeyboardChart2, name: '键盘图表2' },
-            { path: 'line', component: LineMarker, name: '折线图' },
-            { path: 'mixchart', component: MixChart, name: '混合图表' }
         ]
     },
     {
@@ -301,7 +191,7 @@ export const asyncRouterMap = [
         component: Layout,
         redirect: 'noredirect',
         name: '错误页面',
-        icon: '404',
+        icon: 'error',
         children: [
             { path: '401', component: Err401, name: '401' },
             { path: '404', component: Err404, name: '404' }
@@ -313,49 +203,9 @@ export const asyncRouterMap = [
         redirect: 'noredirect',
         name: 'errlog',
         icon: 'bug',
+        hidden: true,
         noDropdown: true,
         children: [{ path: 'log', component: ErrorLog, name: '错误日志' }]
-    },
-    {
-        path: '/excel',
-        component: Layout,
-        redirect: 'noredirect',
-        name: 'excel',
-        icon: 'EXCEL',
-        noDropdown: true,
-        children: [{ path: 'download', component: ExcelDownload, name: '导出excel' }]
-    },
-    {
-        path: '/theme',
-        component: Layout,
-        redirect: 'noredirect',
-        name: 'theme',
-        icon: 'theme',
-         hidden: true,
-        noDropdown: true,
-        children: [{ path: 'index', component: Theme, name: '换肤' }]
-    },
-    {
-        path: '/example',
-        component: Layout,
-        redirect: 'noredirect',
-        name: '综合实例',
-         hidden: true,
-        icon: 'zonghe',
-        children: [{
-            path: '/table',
-            component: TableLayout,
-            redirect: '/table/table',
-            name: 'table',
-            children: [
-                { path: 'dynamictable', component: DynamicTable, name: '动态table' },
-                { path: 'dragtable', component: DragTable, name: '拖拽table' },
-                { path: 'inline_edit_table', component: InlineEditTable, name: 'table内编辑' },
-                { path: 'table', component: Table, name: '综合table' }
-            ]
-        },
-        { path: 'form1', component: Form1, name: '综合form1' }
-        ]
     },
     { path: '*', redirect: '/404', hidden: true }
 

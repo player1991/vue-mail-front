@@ -1,13 +1,13 @@
 <template>
-    <div class="articlesChart-container">
-        <span class="articlesChart-container-title">每天撸文</span>
+    <div class="weekly-using-container">
+        <span class="weekly-using-container-title">最近使用情况</span>
         <line-chart :listData='listData' ></line-chart>
     </div>
 </template>
 <script>
     import LineChart from 'components/Charts/line';
     export default {
-      name: 'articlesChart',
+      name: 'weekly-using',
       components: { LineChart },
       props: {
         listData: {
@@ -22,10 +22,11 @@
     }
 </script>
 <style>
-    .articlesChart-container {
+    .weekly-using-container {
         width: 100%;
+        border-bottom: 1px solid #ccc;
     }
-    .articlesChart-container-title {
+    .weekly-using-container-title {
         color: #7F8C8D;
         font-size: 16px;
         display: inline-block;

@@ -2,26 +2,29 @@
     <div v-loading.body="loading" class="app-container calendar-list-container">
         <el-row class="tool-bar">
             <el-button-group>
-                <el-button v-waves @click="reply()" type="primary" icon="edit" size="small">回复</el-button>
-                <el-button v-waves @click="reply(true)" type="primary" icon="edit" size="small">回复全部</el-button>
+                <el-button v-if="mailType === 'receive'" v-waves @click="reply()" type="primary" icon="edit" size="small">回复</el-button>
+                <el-button v-if="mailType === 'receive'" v-waves @click="reply(true)" type="primary" icon="edit" size="small">回复全部</el-button>
+                <el-button v-if="mailType === 'send'" v-waves @click="edit" type="primary" icon="edit" size="small">编辑</el-button>
                 <el-button v-waves @click="forward" type="primary" icon="share" size="small">转发</el-button>
                 <el-button v-waves @click="deleteMail" type="primary" icon="delete" size="small">删除</el-button>
-    
+                <el-button v-waves @click="initPage" type="primary" size="small">
+                    <icon-svg icon-class="reload4"/>
+                </el-button>
             </el-button-group>
             <el-dropdown @command="handleMark" split-button type="primary" size="small" menu-align="start">
                 标记为
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command="star">
-                        <i class="fa fa-star download-icon"></i>星标邮件</el-dropdown-item>
+                         <icon-svg icon-class="favourite" class="download-icon" />星标邮件</el-dropdown-item>
                     <el-dropdown-item v-for="label in labelList" :key="label.id" :command="label.id+''">
-                        <i class="fa fa-bookmark download-icon"></i>{{label.name}}</el-dropdown-item>
+                        <icon-svg icon-class="label1" class="download-icon" />{{label.name}}</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
             <el-dropdown split-button type="primary" size="small" menu-align="start">
                 附件
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item v-for="file in mail.oldFileList" :key="file.name">
-                        <i class="fa fa-cloud-download download-icon"></i>
+                        <icon-svg icon-class="download3" class="download-icon"/>
                         <a :href="file.url" download="">{{file.name}}</a>
                     </el-dropdown-item>
                 </el-dropdown-menu>
@@ -30,7 +33,7 @@
                 录音
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item v-for="audio in mail.oldAudioList" :key="audio.name">
-                        <i class="fa fa-microphone download-icon"></i>
+                        <icon-svg icon-class="voice4" class="download-icon"/>
                         <a :href="audio.url" download="">{{audio.name}}</a>
                     </el-dropdown-item>
                 </el-dropdown-menu>
@@ -104,8 +107,9 @@ export default {
             },
             loading: true,
             activeGroup: ['target'],
+            labelList: [],
             mailType: '',
-            labelList: []
+            mailId: null
         }
     },
     created() {
@@ -123,10 +127,13 @@ export default {
         },
         getDetail() {
             this.loading = true;
-            const mailId = this.$store.getters.mailId;
-            const mailType = this.$store.getters.mailType;
+            this.mailId = this.$route.params.mailId || this.$store.getters.mailId;
+            if (!this.mailId) {
+                this.$router.push('/');
+            }
             this.mailType = this.$store.getters.mailType;
-            mailDetailAPI.fetchDetail({ mailId, mailType }).then(res => {
+            const query = { mailId: this.mailId, mailType: this.mailType };
+            mailDetailAPI.fetchDetail(query).then(res => {
                 this.loading = false;
                 this.mail = res.data;
             })
@@ -141,6 +148,11 @@ export default {
                 this.$store.commit('SET_PAGE_TYPE', 'reply');
             }
             this.$store.commit('SET_MAIL_TYPE', 'rececive');
+            this.$router.push({ path: '/mail_send/index' });
+        },
+        edit() {
+            this.$store.commit('SET_PAGE_TYPE', 'edit');
+            this.$store.commit('SET_MAIL_TYPE', this.mailType);
             this.$router.push({ path: '/mail_send/index' });
         },
         forward() {
@@ -188,7 +200,7 @@ export default {
                 labelAPI.markLabel(labelId, [this.mail.id]).subscribe({
                     next: () => {
                         const label = this.labelList.filter(item => { if (item.id == labelId) return true })
-                        if (!this.mail.labelList.find((item) => item.id == labelId)) {
+                        if (!this.mail.labelList.find(item => item.id == labelId)) {
                             this.mail.labelList.push(label[0]);
                         }
                     }

@@ -1,12 +1,12 @@
 <template>
-  <svg class="wscn-icon" aria-hidden="true">
+  <svg class="icon" aria-hidden="true">
     <use :xlink:href="iconName"></use>
   </svg>
 </template>
 
 <script>
   export default {
-    name: 'wscn-icon-svg',
+    name: 'icon-svg',
     props: {
       iconClass: {
         type: String,

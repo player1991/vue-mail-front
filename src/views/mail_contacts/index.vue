@@ -7,12 +7,12 @@
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="发送选择的联系人" placement="bottom-start">
                 <el-button v-waves @click="sendMail()" type="primary" class="tool-item filter-item btn-send">
-                    <i class="fa fa-send"></i>
+                    <icon-svg icon-class="send2"/>
                 </el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="发送全部" placement="top-start">
                 <el-button v-waves @click="sendMail('all')" type="primary" class="tool-item filter-item btn-send-to-all">
-                    <i class="fa fa-send"></i>
+                    <icon-svg icon-class="send2"/>
                 </el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="删除选中的联系人" placement="bottom-start">
@@ -35,10 +35,10 @@
                     <img :src="item.avatarUrl" class="avatar-image">
                     <div class="constact-right">
                         <p>
-                            <i class="fa fa-user user-icon"></i>{{item.name}}
+                            <icon-svg icon-class="user4" class="user-icon"/>{{item.name}}
                             <el-button v-waves @click="openForm('edit', item, $event)" type="primary" icon="edit" size="small" class="card-btn card-btn-edit"></el-button>
                             <el-button v-waves @click="sendMail(null, item, $event)" type="primary" size="small" class="btn-send-mail">
-                                <i class="fa fa-send send-mail-icon"></i>
+                                <icon-svg icon-class="send2" class="send-mail-icon"/>
                             </el-button>
                         </p>
                         <div class="mail-container">
