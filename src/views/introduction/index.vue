@@ -1,17 +1,25 @@
 <template>
   <div class="app-container">
     <div class="wrapper">
-       <p>Welcome~~这是一个基于Vue2的邮件前端系统</p>
-       <p>更多信息: <a href="https://github.com/weihomechen/vue-mail-front" target="_blank">https://github.com/weihomechen/vue-mail-front</a></p>
-       <img src="https://github.com/weihomechen/vue-mail-front/blob/master/gifs/welcome.gif"/>
+      <el-row>
+        <el-col :span="12" :offset="6">
+          <p>Welcome~~这是一个基于Vue2的邮件前端系统</p>
+          <p>更多信息:
+            <a href="https://github.com/weihomechen/vue-mail-front" target="_blank">https://github.com/weihomechen/vue-mail-front</a>
+          </p>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6" :offset="6">
+          <img class="welcome-img" src="http://onfdq9ss5.bkt.clouddn.com/welcome.gif" />
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
 <style scoped>
-  .wrapper{
-      width: 100%;
-      height: 100%;
-      background-color: rgb(102,202,255);
-      margin: 30px auto;
-  }
+.app-container {
+  color: #fff;
+  background-color: rgb(102, 202, 255);
+}
 </style>
