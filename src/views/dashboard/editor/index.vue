@@ -97,8 +97,8 @@ export default {
                     { receiveCount: 61, sendCount: 26, week: '201708' },
                     { receiveCount: 78, sendCount: 32, week: '201709' },
                     { receiveCount: 73, sendCount: 22, week: '2017010' },
-                    { receiveCount: 60, sendCount: 20, week: '2017011' },
-                    { receiveCount: 73, sendCount: 24, week: '2017012' }
+                    { receiveCount: 62, sendCount: 20, week: '2017011' },
+                    { receiveCount: 66, sendCount: 23, week: '2017012' }
                 ],
                 frequertContacts: [
                     {

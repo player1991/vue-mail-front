@@ -183,7 +183,6 @@ export default {
             }
         },
         showCropper() {
-            debugger
             this.imageCropperShow = true;
         },
         cropSuccess(resData) {
@@ -204,7 +203,7 @@ export default {
                             });
                             setTimeout(() => {
                                 this.formVisible = false;
-                                this.getList();
+                                this.getContacts();
                             }, 1000)
                         },
                         error: () => {

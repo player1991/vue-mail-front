@@ -147,7 +147,7 @@ export default {
             } else {
                 this.$store.commit('SET_PAGE_TYPE', 'reply');
             }
-            this.$store.commit('SET_MAIL_TYPE', 'rececive');
+            this.$store.commit('SET_MAIL_TYPE', 'receive');
             this.$router.push({ path: '/mail_send/index' });
         },
         edit() {

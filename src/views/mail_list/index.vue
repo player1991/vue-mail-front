@@ -4,12 +4,12 @@
         <div class="filter-container">
     
             <el-button v-if="searchType === 'deleted'" v-waves @click="unDeleted" type="primary" class="tool-item filter-item btn-add">
-                <icon-svg icon-class="undo"/>
+                <icon-svg icon-class="undo" />
             </el-button>
             <el-button v-waves @click="forward" type="primary" icon="share" class="tool-item filter-item btn-forward"></el-button>
             <el-button v-waves type="danger" icon="delete" class="tool-item filter-item btn-del" v-on:click="handleDelete()"></el-button>
             <el-button v-waves type="primary" class="tool-item filter-item btn-reload" v-on:click="getList">
-                <icon-svg icon-class="reload4"/>
+                <icon-svg icon-class="reload4" />
             </el-button>
             <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="标题" v-model="listQuery.title">
             </el-input>
@@ -35,7 +35,7 @@
                 <template scope="scope">
                     <icon-svg @click.native="toggleStar(scope.row)" :icon-class="scope.row.isStar? 'favourite':'favourite-o'" class="star" />
                     <icon-svg v-if="scope.row.isHaveFile" icon-class="label4" class="file" />
-                    <icon-svg v-if="scope.row.isHaveAudio" icon-class="voice4"/>
+                    <icon-svg v-if="scope.row.isHaveAudio" icon-class="voice4" />
                 </template>
             </el-table-column>
     
@@ -238,7 +238,29 @@ export default {
             });
         },
         unDeleted() {
-
+            const selectedLen = this.multipleSelection.length || 0;
+            if (selectedLen < 1) {
+                this.$message('请选择邮件撤销删除');
+                return;
+            }
+            const idArr = [];
+            this.multipleSelection.forEach(item => idArr.push(item.id));
+            // 业务可能要求带上类型，类型在multipleSelection.type
+            mailListAPI.unDoDelMail(idArr).subscribe({
+                next: () => {
+                    this.$message({
+                        message: '撤销删除成功',
+                        type: 'success',
+                        duration: 2000
+                    });
+                    this.getList();
+                },
+                error: () => this.$message({
+                    showClose: true,
+                    message: '撤销删除失败',
+                    type: 'error'
+                })
+            });
         },
         handleDownload() {
             require.ensure([], () => {

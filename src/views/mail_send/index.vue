@@ -37,7 +37,7 @@
         </el-row>
         <el-row :gutter="20">
             <el-col :span='12'>
-                <el-upload class="upload-file" :before-upload="handleBefore" :on-preview="handlePreview" :on-success="handleSuccess" :on-remove="handleRemove" :show-file-list="true" :file-list="mail.oldFileList" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
+                <el-upload class="upload-file" :before-upload="handleBefore" :on-preview="handlePreview" :on-success="handleSuccess" :on-remove="handleRemove" :show-file-list="true" :file-list="mail.oldFileList" drag action="https://httpbin.org/post" multiple>
                     <i class="el-icon-upload"></i>
                     <i class="el-upload__text">将文件拖到此处，或
                         <em>点击上传</em>

@@ -18,6 +18,11 @@ npm run dev
 ```
 如果一切顺利，项目就会在本地 http://localhost:8081 跑起来了
 
+发布到生产环境：
+```
+npm run build:prod
+```
+
 ### 邮件主要模块
 - 写信（支持附件、录音、文本编辑）
 - 邮件列表
@@ -29,14 +34,26 @@ npm run dev
 - 基于`Vue2`
 - `vuex`管理全局状态
 - `vue-router`实现spa导航
+- 动态的路由表
 - UI布局和一些功能组件使用`element-ui`
-- 大部分数据使用Mock.js模拟
+- 大部分数据使用`Mock.js`模拟
 - 使用`Axios`模拟与后台交互
 - 异步编程引入`rxjs`
 - 项目初始化（环境配置）使用`Vue-cli`的`webpack`模板
 
 ### 效果图
 
+![dashboard&write-mail](https://github.com/weihomechen/vue-mail-front/blob/master/gifs/gif1.gif)
+
+![mail-list](https://github.com/weihomechen/vue-mail-front/blob/master/gifs/gif2.gif)
+
+![mail-list2](https://github.com/weihomechen/vue-mail-front/blob/master/gifs/gif3.gif)
+
+![mail-label](https://github.com/weihomechen/vue-mail-front/blob/master/gifs/gif4.gif)
+
+![mail-contact](https://github.com/weihomechen/vue-mail-front/blob/master/gifs/gif5.gif)
+
+PS: 本项目所有的数据都是模拟的，没有与后端做对接，交互上的一些细节可能也没考虑到。
 
 
 

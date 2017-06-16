@@ -6,7 +6,7 @@ export function reply(isALL) {
     } else {
         this.$store.commit('SET_PAGE_TYPE', 'reply');
     }
-    this.$store.commit('SET_MAIL_TYPE', 'rececive');
+    this.$store.commit('SET_MAIL_TYPE', 'receive');
     this.$router.push({ path: '/mail_send/index' });
 }
 
@@ -18,6 +18,6 @@ export function forward() {
     }
     this.$store.commit('SET_MAIL_ID', this.multipleSelection[0].id);
     this.$store.commit('SET_PAGE_TYPE', 'forward');
-    this.$store.commit('SET_MAIL_TYPE', 'rececive');
+    this.$store.commit('SET_MAIL_TYPE', 'receive');
     this.$router.push({ path: '/mail_send/index' });
 }
