@@ -23,6 +23,10 @@ npm run dev
 npm run build:prod
 ```
 
+项目预览地址：
+
+http://rulifun.com/vue-mail/index.html
+
 ### 邮件主要模块
 - 写信（支持附件、录音、文本编辑）
 - 邮件列表
